@@ -49,6 +49,7 @@ window.onload = function() {
     }
 
     accounts = accs;
+    console.log(accounts);
     let account0 = accounts[0];
     let account1 = accounts[1];
 
