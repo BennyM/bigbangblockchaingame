@@ -81,7 +81,6 @@ window.onload = function() {
           game = Game.at(gameAddress);
           gameEndEvent = game.Winner(function(winnerError, winnerResult)
           {
-
             if(!winnerError){
               console.log(winnerResult);
               console.log('winner: ' + winnerResult.args.winner);
