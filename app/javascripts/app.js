@@ -10,8 +10,7 @@ function refreshBalance() {
   var meta = MetaCoin.deployed();
 
   meta.getBalance.call(account, {from: account}).then(function(value) {
-    var balance_element = document.getElementById("balance");
-    balance_element.innerHTML = value.valueOf();
+  console.log(value);
   }).catch(function(e) {
     console.log(e);
     setStatus("Error getting balance; see log.");
@@ -52,7 +51,7 @@ window.onload = function() {
     console.log(accounts);
     let account0 = accounts[0];
     let account1 = accounts[1];
-
+    refreshBalance();
     GameLobby.new({from: account0}).then(function(instance) {
       console.log('lobby available at :' + instance.address);
       var lobby = GameLobby.at(instance);
