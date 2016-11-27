@@ -76,12 +76,14 @@ window.onload = function() {
      gameStarted.watch(function(error, result){
         if (!error)
           console.log('in game event handler')
-         // console.log(result);
+          console.log(result);
           gameAddress = result.args.game;
           game = Game.at(gameAddress);
           gameEndEvent = game.Winner(function(winnerError, winnerResult)
           {
+
             if(!winnerError){
+              console.log(winnerResult);
               console.log('winner: ' + winnerResult.args.winner);
               console.log('loser: ' + winnerResult.args.loser);
               console.log('winner: ' + winnerResult.args.winnerState);
