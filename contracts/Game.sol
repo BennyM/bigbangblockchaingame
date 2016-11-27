@@ -1,4 +1,7 @@
 pragma solidity ^0.4.0;
+
+import "GameLobby.sol";
+
 contract Game {
 
     enum State { None, Rock, Paper, Scissor, Lizard, Spock } 
