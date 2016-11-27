@@ -72,7 +72,8 @@ window.onload = function() {
     })
     .then(function(tx_id){
       console.log('signed up');
-     gameStarted = lobby.GameCreated(function(error, result){
+     gameStarted = lobby.GameCreated();
+     gameStarted.watch(function(error, result){
         if (!error)
           console.log('in game event handler')
          // console.log(result);
