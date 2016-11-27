@@ -83,17 +83,20 @@ window.onload = function() {
               console.log('loser: ' + winnerResult.args.loserState);
             }             
           });
-          game.playHand(1, {from: account0})
-          .then(function(){
-            return game.playHand(2, {from: account1})
-          })          
+                    
         });
       return  lobby.startGame(account0, account1, {from: account0, gas: 4700000 });
     })
     .then(function(tx_id){
           console.log('game created');
-         
+         return game.playHand(1, {from: account0})
+          
         })
+      .then(function(){
+        
+            return game.playHand(2, {from: account1})
+        
+      })
     .catch(function(e) {
       console.log(e);  
   });
