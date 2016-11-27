@@ -51,18 +51,19 @@ window.onload = function() {
     console.log(accounts);
     let account0 = accounts[0];
     let account1 = accounts[1];
-  
+    var lobby;
+  var gameStarted;
     GameLobby.new({from: account0, gas:4700000})
     .then(function(instance) {
       console.log('lobby available at :' + instance.address);
-      var lobby = GameLobby.at(instance.address);
+      lobby = GameLobby.at(instance.address);
       return lobby.openLobby({from: account0})})
     .then(function(tx_id){
         console.log('open for business');
         lobby.signup(account0);
         return lobby.signup(account1)})
     .then(function(tx_id){
-    var gameStarted = lobby.GameCreated(function(error, result){
+     gameStarted = lobby.GameCreated(function(error, result){
         if (!error)
           console.log(result);
         });
