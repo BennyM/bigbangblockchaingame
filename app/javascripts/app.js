@@ -51,7 +51,10 @@ window.onload = function() {
     console.log(accounts);
     let account0 = accounts[0];
     let account1 = accounts[1];
+    var game;
+    var gameAddress;
     var lobby;
+    var gameEndEvent;
   var gameStarted;
     GameLobby.new({from: account0, gas:4700000})
     .then(function(instance) {
@@ -67,12 +70,29 @@ window.onload = function() {
       console.log('signed up');
      gameStarted = lobby.GameCreated(function(error, result){
         if (!error)
+          console.log('in game event handler')
           console.log(result);
+          gameAddress = result.args.game;
+          game = Game.at(gameAddress);
+          gameEndEvent = game.Winner(function(winnerError, winnerResult)
+          {
+            if(!winnerError){
+              console.log('winner: ' + winnerResult.args.winner);
+              console.log('loser: ' + winnerResult.args.loser);
+              console.log('loser: ' + winnerResult.args.winnerState);
+              console.log('loser: ' + winnerResult.args.loserState);
+            }             
+          });
+          game.playHand(1, {from: account0})
+          .then(function(){
+            return game.playHand(2, {from: account1})
+          })          
         });
       return  lobby.startGame(account0, account1, {from: account0, gas: 4700000 });
     })
     .then(function(tx_id){
           console.log('game created');
+         
         })
     .catch(function(e) {
       console.log(e);  
