@@ -52,23 +52,26 @@ window.onload = function() {
     let account0 = accounts[0];
     let account1 = accounts[1];
   
-    GameLobby.new({from: account0, gas:4700000}).then(function(instance) {
+    GameLobby.new({from: account0, gas:4700000})
+    .then(function(instance) {
       console.log('lobby available at :' + instance.address);
       var lobby = GameLobby.at(instance.address);
-      lobby.openLobby({from: account0}).then(function(tx_id){
+      return lobby.openLobby({from: account0})})
+    .then(function(tx_id){
         console.log('open for business');
         lobby.signup(account0);
-        lobby.signup(account1);
-        var gameStarted = lobby.GameCreated(function(error, result){
+        return lobby.signup(account1)})
+    .then(function(tx_id){
+    var gameStarted = lobby.GameCreated(function(error, result){
         if (!error)
           console.log(result);
         });
-        lobby.startGame(account0, account1).then(function(tx_id){
+      return  lobby.startGame(account0, account1).
+    })
+    .then(function(tx_id){
           console.log('game created');
-        });
-      });
-    }).catch(function(e) {
-      console.log(e);
+        })
+    .catch(function(e) {
+      console.log(e);  
   });
-  });
-}
+})};
