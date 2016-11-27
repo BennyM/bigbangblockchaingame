@@ -1,6 +1,5 @@
 pragma solidity ^0.4.0;
 
-import "GameLobby.sol";
 
 contract Game {
 
@@ -98,8 +97,8 @@ contract Game {
                 loser = player1;
             }
             Winner(winner, loser, winningHand, losingHand);
-            GameLobby lobby = GameLobby(gameLobbyaddr);
-           lobby.gameEnded(winner);
+  //          GameLobby lobby = GameLobby(gameLobbyaddr);
+  //         lobby.gameEnded(winner);
         }
     }    
 }
