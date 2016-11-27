@@ -69,7 +69,7 @@ window.onload = function() {
         if (!error)
           console.log(result);
         });
-      return  lobby.startGame(account0, account1);
+      return  lobby.startGame(account0, account1, {from: account0, gas: 4700000 });
     })
     .then(function(tx_id){
           console.log('game created');
