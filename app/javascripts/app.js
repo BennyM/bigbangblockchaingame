@@ -36,6 +36,7 @@ function sendCoin() {
 };
 
 window.onload = function() {
+  
   web3.eth.getAccounts(function(err, accs) {
     if (err != null) {
       alert("There was an error fetching your accounts.");
@@ -48,8 +49,17 @@ window.onload = function() {
     }
 
     accounts = accs;
-    account = accounts[0];
+    let account0 = accounts[0];
+    let account1 = accounts[1];
 
-    refreshBalance();
+    GameLobby.new({from: account0}).then(function(instance) {
+      console.log('lobby available at :' + instance.address);
+      var lobby = GameLobby.at(instance);
+      lobby.openLobby({from: account0}).then(function(tx_id){
+        console.log('open for business');
+      });
+    }).catch(function(e) {
+      console.log(e);
+  });
   });
 }
