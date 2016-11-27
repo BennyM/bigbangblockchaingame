@@ -60,9 +60,11 @@ window.onload = function() {
       return lobby.openLobby({from: account0})})
     .then(function(tx_id){
         console.log('open for business');
-        lobby.signup(account0);
-        return lobby.signup(account1)})
+        lobby.signup(account0, {from: account0});
+        return lobby.signup(account1, {from: account1});
+    })
     .then(function(tx_id){
+      console.log('signed up');
      gameStarted = lobby.GameCreated(function(error, result){
         if (!error)
           console.log(result);
