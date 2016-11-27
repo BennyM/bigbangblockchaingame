@@ -51,8 +51,8 @@ window.onload = function() {
     console.log(accounts);
     let account0 = accounts[0];
     let account1 = accounts[1];
-    refreshBalance();
-    GameLobby.new({from: account0}).then(function(instance) {
+  
+    GameLobby.new({from: account0, gas:4700000}).then(function(instance) {
       console.log('lobby available at :' + instance.address);
       var lobby = GameLobby.at(instance);
       lobby.openLobby({from: account0}).then(function(tx_id){
