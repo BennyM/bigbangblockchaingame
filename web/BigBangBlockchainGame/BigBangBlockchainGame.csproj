@@ -102,6 +102,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="css\site.css" />
+    <Content Include="js\app.js" />
+    <Content Include="js\home\home.html" />
+    <Content Include="js\home\homeController.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -113,8 +116,6 @@
   <ItemGroup>
     <Content Include="Views\web.config" />
     <Content Include="packages.config" />
-    <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
