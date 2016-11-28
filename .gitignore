@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+*.suo
+/web/BigBangBlockchainGame/bin
+/web/BigBangBlockchainGame/obj
+/web/packages
+*.user
+/web/.vs
