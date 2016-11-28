@@ -60,19 +60,7 @@ window.onload = function() {
     .then(function(instance) {
       console.log('lobby available at :' + instance.address);
       lobby = GameLobby.at(instance.address);
-      return lobby.openLobby({from: account0})})
-    .then(function(tx_id){
-        console.log('open for business');
-        console.log('sign up player 1');
-        return lobby.signup(account0, {from: account0});        
-    })
-    .then(function(){
-      console.log('sign up player 2');
-       return lobby.signup(account1, {from: account1});
-    })
-    .then(function(tx_id){
-      console.log('signed up');
-     gameStarted = lobby.GameCreated();
+      gameStarted = lobby.GameCreated();
      gameStarted.watch(function(error, result){
         if (!error)
           console.log('in game event handler')
@@ -89,22 +77,32 @@ window.onload = function() {
               console.log('loser: ' + winnerResult.args.loserState);
             }             
           });
-                    
-        });
-        console.log('start game');
-      return  lobby.startGame(account0, account1, {from: account0, gas: 4700000 });
-    })
-    .then(function(tx_id){
-          console.log('game created');
-          console.log('play hand 1');
-         return game.playHand(1, {from: account0})
-          
-        })
-      .then(function(){
+          game.playHand(1, {from: account0})
+           .then(function(){
         console.log('play hand 2');
             return game.playHand(2, {from: account1})
         
-      })
+      })       
+        });
+
+      return lobby.openLobby({from: account0})})
+    .then(function(tx_id){
+        console.log('open for business');
+        console.log('sign up player 1');
+        return lobby.signup(account0, {from: account0});        
+    })
+    .then(function(){
+      console.log('sign up player 2');
+       return lobby.signup(account1, {from: account1});
+    })
+    .then(function(tx_id){
+      console.log('signed up');
+     
+
+        console.log('start game');
+      return  lobby.startGame(account0, account1, {from: account0, gas: 4700000 });
+    })
+     
     .catch(function(e) {
       console.log(e);  
   });
