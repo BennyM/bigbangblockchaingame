@@ -1,1 +1,16 @@
-﻿<h1>home: {{home}}</h1>
+﻿<h2>Games</h2>
+
+<p>Credits: {{credits}}, credits needed per game: {{costPerGame}}</p>
+
+<button class="btn btn-primary" ng-disabled="credits < costPerGame" ng-click="newGame()"><i class="fa fa-gamepad"></i> New game</button>
+<p></p>
+
+<div class="list-group">
+    <a class="list-group-item" ng-repeat="game in games" ui-sref="game({ gameid: game.id })">
+        {{game.name}}
+        <span class="label label-default pull-right" ng-show="game.state === states.busy">busy</span>
+        <span class="label label-success pull-right" ng-show="game.state === states.won">won</span>
+        <span class="label label-primary pull-right" ng-show="game.state === states.draw">draw</span>
+        <span class="label label-danger pull-right" ng-show="game.state === states.lost">lost</span>
+    </a>
+</div>

@@ -11,6 +11,15 @@
                 templateUrl: 'js/home/home.html',
                 controller: 'HomeController'
             })
+            .state('game', {
+                url: '/game/{gameid}',
+                templateUrl: 'js/game/game.html',
+                controller: 'GameController'
+            })
+            .state('rules', {
+                url: '/game',
+                templateUrl: 'js/game/rules.html'
+            })
         ;
 
         $urlRouterProvider.otherwise('/');
