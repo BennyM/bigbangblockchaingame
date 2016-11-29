@@ -10,7 +10,8 @@ module.exports = {
     "images/": "images/"
   },
   rpc: {
-    host: "localhost",
+    host: "clbrewaji.westeurope.cloudapp.azure.com",
     port: 8545
   }
 };
+
