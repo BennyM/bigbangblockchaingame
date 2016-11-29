@@ -20,6 +20,11 @@
                 url: '/game',
                 templateUrl: 'js/game/rules.html'
             })
+            .state('leaderboard', {
+                url: '/leaderboard',
+                templateUrl: 'js/leaderboard/leaderboard.html',
+                controller: 'LeaderboardController'
+            })
         ;
 
         $urlRouterProvider.otherwise('/');

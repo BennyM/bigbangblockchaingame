@@ -109,6 +109,8 @@
     <Content Include="js\game\rules.png" />
     <Content Include="js\home\home.html" />
     <Content Include="js\home\homeController.js" />
+    <Content Include="js\leaderboard\leaderboard.html" />
+    <Content Include="js\leaderboard\leaderboardController.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
