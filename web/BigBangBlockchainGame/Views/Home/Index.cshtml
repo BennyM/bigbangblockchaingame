@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Bang Blockchain Game</title>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/site.css" rel="stylesheet" type="text/css" />
+
+    <base href="/" />
+
+</head>
+<body ng-app="bigbangblockchain">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a ui-sref="home" class="navbar-brand">Big Bang Blockchain Game</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a ui-sref="home">Games</a></li>
+                    <li><a ui-sref="rules">Rules</a></li>
+                    <li><a ui-sref="leaderboard">Leaderboard</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container body-content">
+        <div ui-view></div>
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Big Bang Blockchain Game</p>
+        </footer>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.9/angular.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.min.js"></script>
+
+    <script src="~/js/app.js"></script>
+    <script src="~/js/home/homeController.js"></script>
+    <script src="~/js/game/gameController.js"></script>
+    <script src="~/js/leaderboard/leaderboardController.js"></script>
+
+</body>
+</html>
