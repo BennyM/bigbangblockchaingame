@@ -33,7 +33,7 @@
             })
             .state('rules', {
                 parent: 'root',
-                url: '/game',
+                url: '/rules',
                 templateUrl: 'js/game/rules.html'
             })
             .state('leaderboard', {
