@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
@@ -51,15 +52,15 @@ namespace BigBangBlockchainGame
             //    clientId: "",
             //    clientSecret: "");
 
-            //app.UseTwitterAuthentication(
-            //   consumerKey: "",
-            //   consumerSecret: "");
+            app.UseTwitterAuthentication(
+               consumerKey: ConfigurationManager.AppSettings["TwitterAppId"],
+               consumerSecret: ConfigurationManager.AppSettings["TwitterSecret"]);
 
 
             app.UseFacebookAuthentication(new FacebookAuthenticationOptions()
             {
-                AppId = "264373860644011",
-                AppSecret = "a16d01c287a246f82b6a19f76836dfef",
+                AppId = ConfigurationManager.AppSettings["FacebookAppId"],
+                AppSecret = ConfigurationManager.AppSettings["FacebookSecret"],
                 Scope = { "email" }
             });
 
