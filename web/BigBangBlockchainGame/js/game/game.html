@@ -1,6 +1,6 @@
 ﻿<h2>Rock, paper, scissors, lizard, spock!</h2>
 
-<div ng-show="playedHand !== handState.none && winner === '0x0000000000000000000000000000000000000000'">
+<div class="gameWaiting" ng-show="playedHand !== handState.none && winner === '0x0000000000000000000000000000000000000000'">
     You played
     <span ng-show="playedHand == handState.rock">Rock</span>
     <span ng-show="playedHand == handState.paper">Paper</span>
@@ -8,24 +8,55 @@
     <span ng-show="playedHand == handState.lizard">Lizard</span>
     <span ng-show="playedHand == handState.spock">Spock</span>
     . Waiting for other player...
+    <p></p>
+    <div class="row">
+        <div class="col-xs-2 col-xs-offset-3">
+            <i class="fa fa-hand-rock-o" ng-show="playedHand === handState.rock"></i>
+            <i class="fa fa-hand-paper-o" ng-show="playedHand === handState.paper"></i>
+            <i class="fa fa-hand-scissors-o" ng-show="playedHand === handState.scissors"></i>
+            <i class="fa fa-hand-lizard-o" ng-show="playedHand === handState.lizard"></i>
+            <i class="fa fa-hand-spock-o" ng-show="playedHand === handState.spock"></i>
+            <br />You
+        </div>
+    </div>
 </div>
 
-<div ng-show="playedHand !== handState.none && winner !== '0x0000000000000000000000000000000000000000'">
+<div class="gameResults" ng-class="{'won': winner === account, 'lost': winner !== account}" ng-show="playedHand !== handState.none && winner !== '0x0000000000000000000000000000000000000000'">
     <span ng-show="winner === account">You won!</span>
     <span ng-show="winner !== account">You lost!</span>
     You played
-    <span ng-show="playedHand == handState.rock">Rock</span>
-    <span ng-show="playedHand == handState.paper">Paper</span>
-    <span ng-show="playedHand == handState.scissors">Scissors</span>
-    <span ng-show="playedHand == handState.lizard">Lizard</span>
-    <span ng-show="playedHand == handState.spock">Spock</span>
+    <span ng-show="playedHand === handState.rock">Rock</span>
+    <span ng-show="playedHand === handState.paper">Paper</span>
+    <span ng-show="playedHand === handState.scissors">Scissors</span>
+    <span ng-show="playedHand === handState.lizard">Lizard</span>
+    <span ng-show="playedHand === handState.spock">Spock</span>
     . Other player played
-    <span ng-show="otherPlayerPlayedHand == handState.rock">Rock</span>
-    <span ng-show="otherPlayerPlayedHand == handState.paper">Paper</span>
-    <span ng-show="otherPlayerPlayedHand == handState.scissors">Scissors</span>
-    <span ng-show="otherPlayerPlayedHand == handState.lizard">Lizard</span>
-    <span ng-show="otherPlayerPlayedHand == handState.spock">Spock</span>
+    <span ng-show="otherPlayerPlayedHand === handState.rock">Rock</span>
+    <span ng-show="otherPlayerPlayedHand === handState.paper">Paper</span>
+    <span ng-show="otherPlayerPlayedHand === handState.scissors">Scissors</span>
+    <span ng-show="otherPlayerPlayedHand === handState.lizard">Lizard</span>
+    <span ng-show="otherPlayerPlayedHand === handState.spock">Spock</span>
     .
+    <p></p>
+    <div class="row">
+        <div class="col-xs-2 col-xs-offset-3">
+            <i class="fa fa-hand-rock-o" ng-show="playedHand === handState.rock"></i>
+            <i class="fa fa-hand-paper-o" ng-show="playedHand === handState.paper"></i>
+            <i class="fa fa-hand-scissors-o" ng-show="playedHand === handState.scissors"></i>
+            <i class="fa fa-hand-lizard-o" ng-show="playedHand === handState.lizard"></i>
+            <i class="fa fa-hand-spock-o" ng-show="playedHand === handState.spock"></i>
+            <br/>You
+        </div>
+
+        <div class="col-xs-2 col-xs-offset-2">
+            <i class="fa fa-hand-rock-o" ng-show="otherPlayerPlayedHand === handState.rock"></i>
+            <i class="fa fa-hand-paper-o" ng-show="otherPlayerPlayedHand === handState.paper"></i>
+            <i class="fa fa-hand-scissors-o" ng-show="otherPlayerPlayedHand === handState.scissors"></i>
+            <i class="fa fa-hand-lizard-o" ng-show="otherPlayerPlayedHand === handState.lizard"></i>
+            <i class="fa fa-hand-spock-o" ng-show="otherPlayerPlayedHand === handState.spock"></i>
+            <br />Other player
+        </div>
+    </div>
 </div>
 
 <div class="chooseHand" ng-show="playedHand === handState.none">
@@ -61,4 +92,3 @@
 <hr/>
 
 <a ui-sref="rules">Rules</a>
-<p>{{player1}} vs {{player2}}</p>

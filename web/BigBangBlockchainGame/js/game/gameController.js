@@ -24,6 +24,22 @@
 
         function initialize() {
 
+            var gameWinEvent = game.Winner();
+            gameWinEvent.watch(function(error, result) {
+                if (!error) {
+                    $scope.$apply(function() {
+                        $scope.winner = result.args.winner;
+                        if ($scope.winner === $scope.account) {
+                            $scope.playedHand = parseInt(result.args.winnerState);
+                            $scope.otherPlayerPlayedHand = parseInt(result.args.loserState);
+                        } else {
+                            $scope.playedHand = parseInt(result.args.loserState);
+                            $scope.otherPlayerPlayedHand = parseInt(result.args.winnerState);
+                        }
+                    });
+                }
+            });
+
             game.player1()
                 .then(function (player1) {
                     $scope.$apply(function () {
@@ -52,18 +68,15 @@
                         $scope.winner = winner;
                     });
                     if (winner !== '0x0000000000000000000000000000000000000000') {
-                        if ($scope.isPlayer1) {
-                            return game.lastPlayedHand2();
-                        } else {
-                            return game.lastPlayedHand1();
-                        }
+                        return $scope.isPlayer1 ? game.lastPlayedHand2() : game.lastPlayedHand1();
+                    } else {
+                        return null;
                     }
-                    return null;
                 })
                 .then(function (lastPlayedHand) {
                     if (lastPlayedHand) {
                         $scope.$apply(function () {
-                            $scope.otherPlayerPlayedHand = lastPlayedHand;
+                            $scope.otherPlayerPlayedHand = parseInt(lastPlayedHand);
                         });
                     }
                 });

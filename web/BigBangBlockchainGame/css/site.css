@@ -35,3 +35,19 @@ textarea {
 .chooseHand .gamerow {
     height: 60px;
 }
+
+.gameResults, .gameWaiting {
+    text-align: center;
+}
+
+.gameResults i, .gameWaiting i {
+    font-size: 40px;
+}
+
+.gameResults.won {
+    color: green;
+}
+
+.gameResults.lost {
+    color: red;
+}
