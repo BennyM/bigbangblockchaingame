@@ -10,16 +10,19 @@
         console.log('using account: ' + $scope.account);
         Game.setProvider($rootScope.web3Provider);
         var game = Game.at($stateParams.gameid);
+
+        $scope.playedHand = $scope.handState.none;
+        $scope.otherPlayerPlayedHand = $scope.handState.none;
+        $scope.winner = '0x0000000000000000000000000000000000000000';
         
         $scope.playHand = function (hand) {
-            $rootScope.loading = true;
             game.playHand(hand, { from: $scope.account, gas: 4000000, gasPrice: 20000000000 })
                 .then(function () {
                     $scope.$apply(function() {
                         $scope.playedHand = parseInt(hand);
-                        $rootScope.loading = false;
                     });
                 });
+            $scope.playedHand = parseInt(hand);
         }
 
         function initialize() {
