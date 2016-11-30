@@ -51,7 +51,7 @@
     </div>
 
 <div class="container body-content">
-    <img src="@((User.Identity as ClaimsIdentity).GetGravatarUrl())"/>
+    @*<img src="@((User.Identity as ClaimsIdentity).GetGravatarUrl())"/>*@
     <div ng-show="loading">
         Contacting blockchain... Patience please...
     </div>
