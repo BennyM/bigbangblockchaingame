@@ -1,6 +1,7 @@
 pragma solidity ^0.4.0;
 
 import "Game.sol";
+import "HighScore.sol";
 
 contract GameLobby{
 
@@ -10,12 +11,14 @@ contract GameLobby{
     bool gameStarted;
     address[] games;
     mapping(address => int) public leaderboard;
-
+    
+    address public highscoreAddr;
     event GameCreated(address game, address player1, address player2);
     event PlayerJoined(address player);
 
     function GameLobby(){
         lobbyOwner = msg.sender;
+        highscoreAddr = new HighScore(this);
         gameStarted = false;    
     }
 
@@ -44,7 +47,7 @@ contract GameLobby{
             if(gamesFound < gamesToReturn)
             {
                 var game = Game(games[index]);
-                if(game.player1() == msg.sender || game.player2() == msg.sender){
+                if(game.player1() == player || game.player2() == player){
                     if(skippedGames < skipGames)
                     {
                         skippedGames++;
@@ -96,9 +99,11 @@ contract GameLobby{
 
     function startGame(address player1, address player2){
          if(gameStarted == true){
-            address newGame = new Game(player1, player2);
+            address newGame = new Game(player1, player2, highscoreAddr);
             games.push(newGame);
             GameCreated(newGame, player1, player2);
+            var scorer = HighScore(highscoreAddr);
+            scorer.addAllowedGame(newGame, this);
          }
     }
 

@@ -1,5 +1,6 @@
 pragma solidity ^0.4.0;
 
+import "HighScore.sol";
 
 contract Game {
 
@@ -20,13 +21,15 @@ contract Game {
     State public lastPlayedHand1;
     State public lastPlayedHand2;
     Hand[] public hands;
+    address highscoreAddr;
 
-    function Game(address player1addr, address player2addr){
+    function Game(address player1addr, address player2addr, address scorer){
         gameLobbyaddr = msg.sender;
         lastPlayedHand1 = State.None;
         lastPlayedHand2 = State.None;
         player1 = player1addr;
         player2 = player2addr;
+        highscoreAddr = scorer;
     }
 
     function playHand(State hand){        
@@ -101,8 +104,8 @@ contract Game {
                 loser = player1;
             }
             Winner(winner, loser, winningHand, losingHand);
-  //          GameLobby lobby = GameLobby(gameLobbyaddr);
-  //         lobby.gameEnded(winner);
+            var scorer = HighScore(highscoreAddr);
+            scorer.increaseHighScore(winner, this);
         }
     }    
 }
