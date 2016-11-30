@@ -49,7 +49,11 @@ contract Game {
 
      function declareWinner(){
         if(lastPlayedHand1 == lastPlayedHand2){
+            var playedState = lastPlayedHand1;
             hands.push(Hand({player1Hand: lastPlayedHand1, player2Hand: lastPlayedHand2}));
+            lastPlayedHand1 = State.None;
+            lastPlayedHand2 = State.None;
+            Draw(playedState);
         } 
         else
         {          
