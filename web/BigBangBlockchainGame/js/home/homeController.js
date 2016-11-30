@@ -2,7 +2,7 @@
 
     var app = angular.module('bigbangblockchain');
 
-    var homeController = function ($scope, $state) {
+    var homeController = function ($scope, $state, $rootScope) {
 
         $scope.states = {
             busy: 0,
@@ -33,8 +33,16 @@
 
             $state.go('game', { gameid: 'zzzzzz' });
         }
+        
+        var account0 = "0x" + $rootScope.globalKeystore.getAddresses()[0];
+        console.log('using account: ' + account0);
+        GameLobby.setProvider($rootScope.web3Provider);
+        Game.setProvider($rootScope.web3Provider);
+
+        var lobby = GameLobby.at('0x8722e8f18c9a7e9d3c30312095b7bb0826ae3e7b');
+        console.log(lobby);
     }
 
-    app.controller('HomeController', ['$scope', '$state', homeController]);
+    app.controller('HomeController', ['$scope', '$state', '$rootScope', homeController]);
 
 })();
