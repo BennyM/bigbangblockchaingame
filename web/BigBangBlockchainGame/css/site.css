@@ -17,21 +17,21 @@ textarea {
 }
 
 
-.game button {
+.chooseHand button {
     width: 100%;
     height: 100%;
     padding: 0;
 }
 
-.game button i {
+.chooseHand button i {
     font-size: 40px;
 }
 
-.game .gamerow > div {
+.chooseHand .gamerow > div {
     padding: 0;
     height: 100%;
 }
 
-.game .gamerow {
+.chooseHand .gamerow {
     height: 60px;
 }

@@ -1,9 +1,37 @@
 ﻿<h2>Rock, paper, scissors, lizard, spock!</h2>
 
-<div class="game">
+<div ng-show="playedHand !== handState.none && winner === '0x0000000000000000000000000000000000000000'">
+    You played
+    <span ng-show="playedHand == handState.rock">Rock</span>
+    <span ng-show="playedHand == handState.paper">Paper</span>
+    <span ng-show="playedHand == handState.scissors">Scissors</span>
+    <span ng-show="playedHand == handState.lizard">Lizard</span>
+    <span ng-show="playedHand == handState.spock">Spock</span>
+    . Waiting for other player...
+</div>
+
+<div ng-show="playedHand !== handState.none && winner !== '0x0000000000000000000000000000000000000000'">
+    <span ng-show="winner === account">You won!</span>
+    <span ng-show="winner !== account">You lost!</span>
+    You played
+    <span ng-show="playedHand == handState.rock">Rock</span>
+    <span ng-show="playedHand == handState.paper">Paper</span>
+    <span ng-show="playedHand == handState.scissors">Scissors</span>
+    <span ng-show="playedHand == handState.lizard">Lizard</span>
+    <span ng-show="playedHand == handState.spock">Spock</span>
+    . Other player played
+    <span ng-show="otherPlayerPlayedHand == handState.rock">Rock</span>
+    <span ng-show="otherPlayerPlayedHand == handState.paper">Paper</span>
+    <span ng-show="otherPlayerPlayedHand == handState.scissors">Scissors</span>
+    <span ng-show="otherPlayerPlayedHand == handState.lizard">Lizard</span>
+    <span ng-show="otherPlayerPlayedHand == handState.spock">Spock</span>
+    .
+</div>
+
+<div class="chooseHand" ng-show="playedHand === handState.none">
     <div class="row gamerow">
         <div class="col-xs-2 col-xs-offset-5">
-            <button class="btn btn-primary"><i class="fa fa-hand-rock-o"></i><br />Rock</button>
+            <button class="btn btn-primary" ng-click="playHand(handState.rock)" ng-disabled="loading"><i class="fa fa-hand-rock-o"></i><br />Rock</button>
         </div>
     </div>
     <div class="row gamerow">
@@ -11,10 +39,10 @@
     </div>
     <div class="row gamerow">
         <div class="col-xs-2 col-xs-offset-1">
-            <button class="btn btn-primary"><i class="fa fa-hand-paper-o"></i><br />Paper</button>
+            <button class="btn btn-primary" ng-click="playHand(handState.paper)" ng-disabled="loading"><i class="fa fa-hand-paper-o"></i><br />Paper</button>
         </div>
         <div class="col-xs-2 col-xs-offset-6">
-            <button class="btn btn-primary"><i class="fa fa-hand-lizard-o"></i><br />Lizard</button>
+            <button class="btn btn-primary" ng-click="playHand(handState.lizard)" ng-disabled="loading"><i class="fa fa-hand-lizard-o"></i><br />Lizard</button>
         </div>
     </div>
     <div class="row gamerow">
@@ -22,13 +50,15 @@
     </div>
     <div class="row gamerow">
         <div class="col-xs-2 col-xs-offset-3">
-            <button class="btn btn-primary"><i class="fa fa-hand-scissors-o"></i><br />Scissors</button>
+            <button class="btn btn-primary" ng-click="playHand(handState.scissors)" ng-disabled="loading"><i class="fa fa-hand-scissors-o"></i><br />Scissors</button>
         </div>
         <div class="col-xs-2 col-xs-offset-2">
-            <button class="btn btn-primary"><i class="fa fa-hand-spock-o"></i><br />Spock</button>
+            <button class="btn btn-primary" ng-click="playHand(handState.spock)" ng-disabled="loading"><i class="fa fa-hand-spock-o"></i><br />Spock</button>
         </div>
     </div>
 </div>
 
 <hr/>
+
 <a ui-sref="rules">Rules</a>
+<p>{{player1}} vs {{player2}}</p>

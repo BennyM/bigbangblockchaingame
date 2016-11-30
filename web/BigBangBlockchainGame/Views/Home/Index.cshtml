@@ -33,16 +33,17 @@
     </div>
 
     <div class="container body-content">
-        <div ui-view>
-            Loading the blockchain...
+        <div ng-show="loading">
+            Contacting blockchain... Patience please...
         </div>
-        <hr />
+        <div ui-view></div>
+        <hr/>
         <footer>
             <p>&copy; @DateTime.Now.Year - Big Bang Blockchain Game</p>
         </footer>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.9/angular.js"></script>
