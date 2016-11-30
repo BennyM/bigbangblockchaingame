@@ -1,11 +1,19 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+@using Microsoft.AspNet.Identity
+@using BigBangBlockchainGame.Controllers
+@{
+    Layout = null;
+    ViewBag.Title = "Home Page";
+}
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Big Bang Blockchain Game</title>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="~/css/site.css" rel="stylesheet" type="text/css" />
 
     <base href="/" />
@@ -28,6 +36,18 @@
                     <li><a ui-sref="rules">Rules</a></li>
                     <li><a ui-sref="leaderboard">Leaderboard</a></li>
                 </ul>
+
+                @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <li><a href="javascript:;">@((User.Identity as ClaimsIdentity).GetName())</a></li>
+                        </li>
+                        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+                    </ul>
+                }
             </div>
         </div>
     </div>
@@ -37,7 +57,7 @@
             Waiting for block to be mined... Patience please...
         </div>
         <div ui-view></div>
-        <hr/>
+        <hr />
         <footer>
             <p>&copy; @DateTime.Now.Year - Big Bang Blockchain Game</p>
         </footer>

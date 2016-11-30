@@ -12,6 +12,7 @@ contract GameLobby{
     mapping(address => int) public leaderboard;
 
     event GameCreated(address game, address player1, address player2);
+    event PlayerJoined(address player);
 
     function GameLobby(){
         lobbyOwner = msg.sender;
@@ -74,8 +75,23 @@ contract GameLobby{
 
     function signup(address availablePlayer){
         if(gameStarted == true){
-            availablePlayers.push(availablePlayer);
+            
+            if(!playerInLobby(availablePlayer)){
+                availablePlayers.push(availablePlayer);
+                PlayerJoined(availablePlayer);
+            }
         }        
+    }
+
+    function playerInLobby(address playerAddr) constant returns (bool){
+        bool alreadyJoined = false;
+        for (uint p = 0; p < availablePlayers.length; p++)
+        {
+            if(availablePlayers[p] == playerAddr){
+                alreadyJoined = true;
+            }
+        } 
+        return alreadyJoined;
     }
 
     function startGame(address player1, address player2){
