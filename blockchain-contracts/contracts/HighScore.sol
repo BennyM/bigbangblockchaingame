@@ -19,6 +19,10 @@ contract HighScore {
         }
     }
 
+    function highScoreOfPlayer(address player) constant returns (uint){
+        return leaderboard[player];
+    }
+
     function increaseHighScore(address player, address gameAddr){
         bool authorizedGame = false;
         for (var index = 0; index < allowedGames.length; index++) {
