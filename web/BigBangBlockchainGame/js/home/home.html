@@ -1,10 +1,20 @@
 ﻿<h2>Games</h2>
 
-<p>Credits: {{credits}}, credits needed per game: {{costPerGame}}</p>
+<!--<p>Credits: {{credits}}, credits needed per game: {{costPerGame}}</p>-->
 
-<button class="btn btn-primary" ng-disabled="credits < costPerGame" ng-click="newGame()"><i class="fa fa-gamepad"></i> New game</button>
+<button class="btn btn-primary" ng-disabled="credits < costPerGame || loading || inLobby" ng-click="joinLobby()"><i class="fa fa-gamepad"></i> New game</button>
 <p></p>
 
+<div ng-show="inLobby">
+    <h3>Find player...</h3>
+    <div class="list-group">
+        <a class="list-group-item" ng-repeat="player in availablePlayers" ng-click="newGame(player.id)">
+            {{player.name}}
+        </a>
+    </div>
+</div>
+
+<h3>Games</h3>
 <div class="list-group">
     <a class="list-group-item" ng-repeat="game in games" ui-sref="game({ gameid: game.id })">
         {{game.name}}
