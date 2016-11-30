@@ -47,16 +47,40 @@
         
         GameLobby.setProvider($rootScope.web3Provider);
 
-        lobby = GameLobby.at('0x8722e8f18c9a7e9d3c30312095b7bb0826ae3e7b');
+        //$rootScope.loading = true;
+        //GameLobby.new({ from: account, gas: 4000000, gasPrice: 20000000000 })
+        //    .then(function(instance) {
+        //        console.log('lobby available at :' + instance.address);
+                
+        //        lobby.openLobby({ from: account, gas: 4000000, gasPrice: 20000000000 });
+
+        //        $rootScope.loading = false;
+        //    });
+        
+        lobby = GameLobby.at('0x6875bc3bc35ca49d36a9f6fc472311a6bc3471c5');
         console.log(lobby);
 
-        //todo fetch from GameLobby (private at this moment)
-        $scope.availablePlayers = [
-            {
-                id: '0xdbd1f299022f5e66b5c80e055bdee7e9aa4635cd',
-                name: 'Benny Michielsen'
-            }
-        ];
+        //lobby.gamesOfUser.call(account, { from: account })
+        //    .then(function(games) {
+        //        console.log(games);
+        //    });
+
+        lobby.availablePlayers()
+            .then(function (availablePlayers) {
+                $scope.$apply(function () {
+                    $scope.availablePlayers = [];
+
+                    availablePlayers.forEach(function (p) {
+                        if (p !== account) {
+                            $scope.availablePlayers.push({
+                                id: p,
+                                name: 'Player ' + p
+                            });
+                        }
+                    });
+                });
+            });
+        
     }
 
     app.controller('HomeController', ['$scope', '$state', '$rootScope', homeController]);
