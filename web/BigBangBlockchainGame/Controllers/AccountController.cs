@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -9,6 +10,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using BigBangBlockchainGame.Models;
+using Facebook;
 
 namespace BigBangBlockchainGame.Controllers
 {
@@ -90,8 +92,22 @@ namespace BigBangBlockchainGame.Controllers
                     // If the user does not have an account, then prompt the user to create an account
                     ViewBag.ReturnUrl = returnUrl;
                     ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-                    //loginInfo.ExternalIdentity.Claims.Where(x => x.)
-                    var user = new ApplicationUser { UserName = Guid.NewGuid().ToString(), Name = loginInfo.ExternalIdentity.GetName() };
+                    var emailClaim = loginInfo.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+                    var user = new ApplicationUser { UserName = Guid.NewGuid().ToString(), Name = loginInfo.ExternalIdentity.GetName(), Email = loginInfo.Email ?? emailClaim?.Value};
+                    if (string.IsNullOrEmpty(user.Email))
+                    {
+                        if (loginInfo.Login.LoginProvider == "Facebook")
+                        {
+                            var identity = AuthenticationManager.GetExternalIdentity(DefaultAuthenticationTypes.ExternalCookie);
+                            var access_token = identity.FindFirstValue("FacebookAccessToken");
+                            if (!string.IsNullOrEmpty(access_token))
+                            {
+                                var fb = new FacebookClient(access_token);
+                                dynamic myInfo = fb.Get("/me?fields=email"); // specify the email field
+                                user.Email = myInfo.email;
+                            }
+                        }
+                    }
                     var createUserResult = await UserManager.CreateAsync(user);
                     if (createUserResult.Succeeded)
                     {
@@ -204,10 +220,21 @@ namespace BigBangBlockchainGame.Controllers
     public static class NameHelper
     {
         internal const string NameClaim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
+        internal const string EmailClaim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress";
 
         public static string GetName(this ClaimsIdentity identity)
         {
-            return identity.Claims.FirstOrDefault(x => x.Type == NameClaim)?.Value;
+            return identity.FindFirstValue(NameClaim);
+        }
+
+        public static string GetGravatarUrl(this ClaimsIdentity identity)
+        {
+            string email = identity.FindFirstValue(EmailClaim) ?? "noemail@hotmail.com";
+            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
+            {
+                var hash = string.Concat(md5.ComputeHash(Encoding.ASCII.GetBytes(email)).Select(x => x.ToString("X2"))).ToLower();
+                return "https://www.gravatar.com/avatar/" + hash + "?d=identicon";
+            }
         }
     }
 }

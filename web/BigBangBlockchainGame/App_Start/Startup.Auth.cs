@@ -6,6 +6,7 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
 using BigBangBlockchainGame.Models;
+using Microsoft.Owin.Security.Facebook;
 
 namespace BigBangBlockchainGame
 {
@@ -54,9 +55,13 @@ namespace BigBangBlockchainGame
             //   consumerKey: "",
             //   consumerSecret: "");
 
-            app.UseFacebookAuthentication(
-               appId: "264373860644011",
-               appSecret: "a16d01c287a246f82b6a19f76836dfef");
+
+            app.UseFacebookAuthentication(new FacebookAuthenticationOptions()
+            {
+                AppId = "264373860644011",
+                AppSecret = "a16d01c287a246f82b6a19f76836dfef",
+                Scope = { "email" }
+            });
 
             //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             //{
