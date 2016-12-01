@@ -2,7 +2,7 @@
 
     var app = angular.module('bigbangblockchain');
 
-    var homeController = function ($scope, $state, $rootScope) {
+    var homeController = function ($scope, $state, $rootScope, gameLogicService) {
 
         var lobby;
         var account = "0x" + $rootScope.globalKeystore.getAddresses()[0];
@@ -58,52 +58,14 @@
 
         }
         
-        GameLobby.setProvider($rootScope.web3Provider);
-
-        //$rootScope.loading = true;
-        //GameLobby.new({ from: account, gas: 4000000, gasPrice: 20000000000 })
-        //    .then(function(instance) {
-        //        lobby = GameLobby.at(instance.address);
-        //        lobby.openLobby({ from: account, gas: 4000000, gasPrice: 20000000000 })
-        //            .then(function() {
-        //                console.log('lobby available at :' + instance.address);
-        //                $rootScope.loading = false;
-        //            });
-        //    });
-        
-        lobby = GameLobby.at('0xed58bf3bc12daee41408f2ae9d465c8379329443');
-        
-        function playerToBeAdded(player) {
-            var alreadyThere = false;
-            $scope.availablePlayers.forEach(function(p) {
-                if (p.id === player) {
-                    alreadyThere = true;
-                }
-            });
-
-            return player !== account && !alreadyThere;
-        }
-        function addPlayer(error, result) {
-            if (playerToBeAdded(result.args.player)) {
-                $scope.$apply(function() {
-                    $scope.availablePlayers.push({
-                        id: result.args.player,
-                        name: 'Player ' + result.args.player
-                    });
-                });
-            }
-        }
-
-        $scope.availablePlayers =[];
-        var playerJoinedEvents = lobby.PlayerJoined({}, { fromBlock: 0, toBlock: 'latest' });
-        playerJoinedEvents.get(function (error, result) {
-            result.forEach(function (e) {
-                addPlayer(error, e);
+        lobby = gameLogicService.getLobby();
+        $scope.availablePlayers = gameLogicService.getJoinedPlayers();
+        var playerJoinedEvent = lobby.PlayerJoined();
+        playerJoinedEvent.watch(function() {
+            $scope.$apply(function() {
+                $scope.availablePlayers = gameLogicService.getJoinedPlayers();
             });
         });
-        var playerJoinedEvent = lobby.PlayerJoined();
-        playerJoinedEvent.watch(addPlayer);
-
 
 
         function calculateState(winner) {
@@ -193,6 +155,6 @@
 
     }
 
-    app.controller('HomeController', ['$scope', '$state', '$rootScope', homeController]);
+    app.controller('HomeController', ['$scope', '$state', '$rootScope', 'GameLogicService', homeController]);
 
 })();
