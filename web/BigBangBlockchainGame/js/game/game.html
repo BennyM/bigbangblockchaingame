@@ -56,7 +56,9 @@
 </div>
 
 <div class="chooseHand" ng-show="playedHand === handState.none">
-    <img src="assets/rules.png" usemap="#icons" />
+    <p ng-show="draws.length > 0">Try again! Last game was a draw!</p>
+
+    <img src="assets/rules.png" usemap="#icons"/>
     <map name="icons">
         <area shape="circle" coords="175,85,50" ng-click="playHand(handState.rock)">
         <area shape="circle" coords="270,160,50" ng-click="playHand(handState.lizard)">
@@ -64,6 +66,16 @@
         <area shape="circle" coords="115,270,50" ng-click="playHand(handState.scissors)">
         <area shape="circle" coords="80,160,50" ng-click="playHand(handState.paper)">
     </map>
+
+    <p ng-show="draws.length > 0">Following {{draws.length}} hands were played and ended on a draw:
+        <div ng-repeat="draw in draws">
+            <span ng-show="draw.state === handState.rock">Rock</span>
+            <span ng-show="draw.state === handState.paper">Paper</span>
+            <span ng-show="draw.state === handState.scissors">Scissors</span>
+            <span ng-show="draw.state === handState.lizard">Lizard</span>
+            <span ng-show="draw.state === handState.spock">Spock</span>
+        </div>
+    </p>
 </div>
 
 <hr/>

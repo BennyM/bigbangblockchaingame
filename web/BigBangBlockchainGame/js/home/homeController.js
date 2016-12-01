@@ -23,17 +23,21 @@
                 .then(function (inLobby) {
                     $scope.$apply(function() {
                         $scope.inLobby = inLobby;
-                    
-                        if (!inLobby) {
+                    });
+
+                    if (!inLobby) {
+                        $scope.$apply(function() {
                             $rootScope.loading = true;
-                            lobby.signup(account, { from: account, gas: 4000000, gasPrice: 20000000000 })
-                                .then(function () {
-                                    $scope.$apply(function () {
-                                        $scope.inLobby = true;
-                                        $rootScope.loading = false;
-                                    });
-                                });
-                        }
+                        });
+                        return lobby.signup(account, { from: account, gas: 4000000, gasPrice: 20000000000 });
+                    } else {
+                        return null;
+                    }
+                })
+                .then(function () {
+                    $scope.$apply(function () {
+                        $scope.inLobby = true;
+                        $rootScope.loading = false;
                     });
                 });
 
@@ -81,20 +85,23 @@
         }
         function addPlayer(error, result) {
             if (playerToBeAdded(result.args.player)) {
-                $scope.availablePlayers.push({
-                    id: result.args.player,
-                    name: 'Player ' + result.args.player
+                $scope.$apply(function() {
+                    $scope.availablePlayers.push({
+                        id: result.args.player,
+                        name: 'Player ' + result.args.player
+                    });
                 });
             }
         }
 
         $scope.availablePlayers =[];
-        var playerJoinedEvent = lobby.PlayerJoined({}, { fromBlock: 0, toBlock: 'latest' });
-        playerJoinedEvent.get(function (error, result) {
+        var playerJoinedEvents = lobby.PlayerJoined({}, { fromBlock: 0, toBlock: 'latest' });
+        playerJoinedEvents.get(function (error, result) {
             result.forEach(function (e) {
                 addPlayer(error, e);
             });
         });
+        var playerJoinedEvent = lobby.PlayerJoined();
         playerJoinedEvent.watch(addPlayer);
 
 
@@ -110,22 +117,23 @@
                 return $scope.states.busy;
             }
         }
-        function gameToBeAdded(game) {
+        function gameToBeAdded(gameArgs) {
             var alreadyThere = false;
             $scope.games.forEach(function(g) {
-                if (g.id === game) {
+                if (g.id === gameArgs.game) {
                     alreadyThere = true;
                 }
             });
 
-            return !alreadyThere;
+            return !alreadyThere && (gameArgs.player1 === account || gameArgs.player2 === account);
         }
         function addGame(error, result, isPlayer1) {
-            if (gameToBeAdded(result.args.game)) {
+            if (gameToBeAdded(result.args)) {
                 var versus = isPlayer1 ? result.args.player2 : result.args.player1;
                 var newGame = {
                     id: result.args.game,
-                    name: 'Game against ' + versus
+                    name: 'Game against ' + versus,
+                    draws: 0
                 };
 
                 $scope.$apply(function() {
@@ -145,25 +153,40 @@
                         newGame.state = result.args.winner === account ? $scope.states.won : $scope.states.lost;
                     });
                 });
+                var drawEvents = game.Draw({}, { fromBlock: 0, toBlock: 'latest' });
+                drawEvents.get(function (error, result) {
+                    $scope.$apply(function () {
+                        newGame.draws = result.length;
+                    });
+                });
+                var drawEvent = game.Draw();
+                drawEvent.watch(function(error, result) {
+                    $scope.$apply(function() {
+                        newGame.draws++;
+                    });
+                });
+                
             }
         }
 
         $scope.games = [];
-        var gameCreatedEventPlayer1 = lobby.GameCreated({ player1: account }, { fromBlock: 0, toBlock: 'latest' });
-        var gameCreatedEventPlayer2 = lobby.GameCreated({ player2: account }, { fromBlock: 0, toBlock: 'latest' });
-        gameCreatedEventPlayer1.get(function(error, result) {
+        var gameCreatedEventsPlayer1 = lobby.GameCreated({ player1: account }, { fromBlock: 0, toBlock: 'latest' });
+        var gameCreatedEventsPlayer2 = lobby.GameCreated({ player2: account }, { fromBlock: 0, toBlock: 'latest' });
+        gameCreatedEventsPlayer1.get(function(error, result) {
             result.forEach(function(e) {
                 addGame(error, e, true);
             });
         });
-        gameCreatedEventPlayer2.get(function (error, result) {
+        gameCreatedEventsPlayer2.get(function (error, result) {
             result.forEach(function (e) {
                 addGame(error, e, false);
             });
         });
+        var gameCreatedEventPlayer1 = lobby.GameCreated({ player1: account });
         gameCreatedEventPlayer1.watch(function (error, result) {
             addGame(error, result, true);
         });
+        var gameCreatedEventPlayer2 = lobby.GameCreated({ player2: account });
         gameCreatedEventPlayer2.watch(function (error, result) {
             addGame(error, result, false);
         });
