@@ -218,6 +218,7 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\rules.png" />
     <Content Include="css\site.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />

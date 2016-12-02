@@ -17,7 +17,7 @@ using System.Net.Http;
 
 namespace BigBangBlockchainGame.Controllers
 {
-   // [Authorize]
+    [Authorize]
     public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;
