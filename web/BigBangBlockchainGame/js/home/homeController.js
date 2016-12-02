@@ -5,11 +5,11 @@
     var homeController = function ($scope, $state, $rootScope, gameLogicService, $http) {
 
         var lobby;
-        var account = "0x" + $rootScope.globalKeystore.getAddresses()[0];
-        $http.post('/account/RegisterAddress?address=' + account).then(function (response) { console.log(response); }, function (error) { console.log(error); });
+        $scope.account = "0x" + $rootScope.globalKeystore.getAddresses()[0];
+        $http.post('/account/RegisterAddress?address=' + $scope.account).then(function (response) { console.log(response); }, function (error) { console.log(error); });
         $scope.inLobby = false;
 
-        console.log('using account: ' + account);
+        console.log('using account: ' + $scope.account);
 
         //temp ui params
         $scope.states = {busy: 0,won: 1, lost: 2};
@@ -20,42 +20,45 @@
 
 
         $scope.joinLobby = function () {
-            lobby.playerInLobby.call(account, { from: account })
-                .then(function (inLobby) {
-                    $scope.$apply(function() {
-                        $scope.inLobby = inLobby;
-                    });
-
-                    if (!inLobby) {
-                        $scope.$apply(function() {
-                            $rootScope.loading = true;
+            if ($scope.inLobby) {
+                $scope.inLobby = false;
+            } else {
+                lobby.playerInLobby.call($scope.account, { from: $scope.account })
+                    .then(function (inLobby) {
+                        $scope.$apply(function () {
+                            $scope.inLobby = inLobby;
                         });
-                        return lobby.signup(account, { from: account, gas: 4000000, gasPrice: 20000000000 });
-                    } else {
-                        return null;
-                    }
-                })
-                .then(function () {
-                    $scope.$apply(function () {
-                        $scope.inLobby = true;
-                        $rootScope.loading = false;
-                    });
-                });
 
+                        if (!inLobby) {
+                            $scope.$apply(function () {
+                                $rootScope.loading = true;
+                            });
+                            return lobby.signup($scope.account, { from: $scope.account, gas: 4000000, gasPrice: 20000000000 });
+                        } else {
+                            return null;
+                        }
+                    })
+                    .then(function () {
+                        $scope.$apply(function () {
+                            $scope.inLobby = true;
+                            $rootScope.loading = false;
+                        });
+                    });
+            }
         }
 
         $scope.newGame = function (versus) {
-            var gameStartedEvent = lobby.GameCreated({}, { address: account });
+            var gameStartedEvent = lobby.GameCreated({}, { address: $scope.account });
             gameStartedEvent.watch(function(error, result) {
                 console.log(result);
-                if (result.args.player1 === account && result.args.player2 === versus) {
+                if (result.args.player1 === $scope.account && result.args.player2 === versus) {
                     $rootScope.loading = false;
                     $state.go('game', { gameid: result.args.game });
                 }
             });
 
             $rootScope.loading = true;
-            lobby.startGame(account, versus, { from: account, gas: 4000000, gasPrice: 20000000000 });
+            lobby.startGame($scope.account, versus, { from: $scope.account, gas: 4000000, gasPrice: 20000000000 });
 
         }
         
@@ -71,7 +74,7 @@
 
         function calculateState(winner) {
             if (winner !== '0x0000000000000000000000000000000000000000') {
-                if (winner === account) {
+                if (winner === $scope.account) {
                     return $scope.states.won;
                 } else {
                     return $scope.states.lost;
@@ -88,7 +91,7 @@
                 }
             });
 
-            return !alreadyThere && (gameArgs.player1 === account || gameArgs.player2 === account);
+            return !alreadyThere && (gameArgs.player1 === $scope.account || gameArgs.player2 === $scope.account);
         }
         function addGame(error, result, isPlayer1) {
             if (gameToBeAdded(result.args)) {
@@ -113,7 +116,7 @@
                 var winnerEvent = game.Winner();
                 winnerEvent.watch(function (error, result) {
                     $scope.$apply(function() {
-                        newGame.state = result.args.winner === account ? $scope.states.won : $scope.states.lost;
+                        newGame.state = result.args.winner === $scope.account ? $scope.states.won : $scope.states.lost;
                     });
                 });
                 var drawEvents = game.Draw({}, { fromBlock: 0, toBlock: 'latest' });
@@ -133,8 +136,8 @@
         }
 
         $scope.games = [];
-        var gameCreatedEventsPlayer1 = lobby.GameCreated({ player1: account }, { fromBlock: 0, toBlock: 'latest' });
-        var gameCreatedEventsPlayer2 = lobby.GameCreated({ player2: account }, { fromBlock: 0, toBlock: 'latest' });
+        var gameCreatedEventsPlayer1 = lobby.GameCreated({ player1: $scope.account }, { fromBlock: 0, toBlock: 'latest' });
+        var gameCreatedEventsPlayer2 = lobby.GameCreated({ player2: $scope.account }, { fromBlock: 0, toBlock: 'latest' });
         gameCreatedEventsPlayer1.get(function(error, result) {
             result.forEach(function(e) {
                 addGame(error, e, true);
@@ -145,11 +148,11 @@
                 addGame(error, e, false);
             });
         });
-        var gameCreatedEventPlayer1 = lobby.GameCreated({ player1: account });
+        var gameCreatedEventPlayer1 = lobby.GameCreated({ player1: $scope.account });
         gameCreatedEventPlayer1.watch(function (error, result) {
             addGame(error, result, true);
         });
-        var gameCreatedEventPlayer2 = lobby.GameCreated({ player2: account });
+        var gameCreatedEventPlayer2 = lobby.GameCreated({ player2: $scope.account });
         gameCreatedEventPlayer2.watch(function (error, result) {
             addGame(error, result, false);
         });

@@ -4,6 +4,7 @@
 
     var leaderboardController = function($scope, $rootScope, gameLogicService) {
         var highscores;
+        $scope.account = "0x" + $rootScope.globalKeystore.getAddresses()[0];
 
         function getHighscores() {
             var highscoreChangedEvents = highscores.HighScoreChanged({}, { fromBlock: 0, toBlock: 'latest' });

@@ -44,7 +44,7 @@
                         callback(null, 'password');
                     };
                     web3Provider = new HookedWeb3Provider({
-                        host: 'http://clbrewaji.westeurope.cloudapp.azure.com:8545',
+                        host: $('#blockchainurl').data('blockchainurl'),
                         transaction_signer: globalKeystore
                     });
                     ready();
@@ -61,7 +61,7 @@
                             };
                             globalKeystore = ks;
                             web3Provider = new HookedWeb3Provider({
-                                host: 'http://clbrewaji.westeurope.cloudapp.azure.com:8545',
+                                host: $('#blockchainurl').data('blockchainurl'),
                                 transaction_signer: ks
                             });
                             ks.keyFromPassword('password', function (err, pwDerivedKey) {
@@ -107,7 +107,7 @@
                     //    });
 
                     //lobby = GameLobby.at('0xed58bf3bc12daee41408f2ae9d465c8379329443');
-                    lobby = GameLobby.at('0x91f15c94463218d2f1693963daddd5ef80336406');
+                    lobby = GameLobby.at($('#gamelobbyaddress').data('gamelobbyaddress'));
                     
                     var playerJoinedEvents = lobby.PlayerJoined({}, { fromBlock: 0, toBlock: 'latest' });
                     playerJoinedEvents.get(function (error, result) {
