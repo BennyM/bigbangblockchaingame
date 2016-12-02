@@ -2,7 +2,11 @@
 
 <ul class="list-group">
     <li class="list-group-item" ng-repeat="person in leaderboard | orderBy:'amountOfGamesWon':true">
-        #{{$index+1}}: {{person.name}} 
+        #{{$index+1}}: {{person.name}}
         <span class="badge">{{person.amountOfGamesWon}}</span>
     </li>
 </ul>
+
+<hr/>
+
+<p>Your account: {{account}}</p>

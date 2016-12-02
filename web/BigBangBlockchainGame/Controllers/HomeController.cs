@@ -1,13 +1,18 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Configuration;
+using System.Web.Mvc;
 
 namespace BigBangBlockchainGame.Controllers
 {
     public class HomeController : Controller
     {
-       [Authorize]
+        [Authorize]
         public ActionResult Index()
         {
-            return View();
+            var gamelobbyAddress = ConfigurationManager.AppSettings["gamelobbyAddress"];
+            var blockchainUrl = ConfigurationManager.AppSettings["blockchainUrl"];
+
+            return View(Tuple.Create(gamelobbyAddress, blockchainUrl));
         }
     }
 }

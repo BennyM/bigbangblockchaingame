@@ -1,4 +1,6 @@
-﻿@using System.Security.Claims
+﻿@model Tuple<string, string>
+
+@using System.Security.Claims
 @using Microsoft.AspNet.Identity
 @using BigBangBlockchainGame.Controllers
 @{
@@ -20,35 +22,38 @@
 
 </head>
 <body ng-app="bigbangblockchain">
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a ui-sref="home" class="navbar-brand">Big Bang Blockchain Game</a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a ui-sref="home">Games</a></li>
-                    <li><a ui-sref="rules">Rules</a></li>
-                    <li><a ui-sref="leaderboard">Leaderboard</a></li>
+<div id="gamelobbyaddress" data-gamelobbyaddress="@Model.Item1"></div>
+<div id="blockchainurl" data-blockchainurl="@Model.Item2"></div>
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a ui-sref="home" class="navbar-brand">Big Bang Blockchain Game</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a ui-sref="home">Games</a></li>
+                <li><a ui-sref="rules">Rules</a></li>
+                <li><a ui-sref="leaderboard">Leaderboard</a></li>
+            </ul>
+
+            @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new {id = "logoutForm", @class = "navbar-right"}))
+            {
+                @Html.AntiForgeryToken()
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li><li><a href="javascript:;">@((User.Identity as ClaimsIdentity).GetName())</a></li></li>
+                    <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
                 </ul>
-
-                @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
-                {
-                    @Html.AntiForgeryToken()
-
-                    <ul class="nav navbar-nav navbar-right">
-                        <li><li><a href="javascript:;">@((User.Identity as ClaimsIdentity).GetName())</a></li></li>
-                        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
-                    </ul>
-                }
-            </div>
+            }
         </div>
     </div>
+</div>
 
 <div class="container body-content">
     @*<img src="@((User.Identity as ClaimsIdentity).GetGravatarUrl())"/>*@
@@ -62,21 +67,21 @@
     </footer>
 </div>
 
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.9/angular.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.9/angular.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.min.js"></script>
 
-    <script src="~/js/blockchain/lightwallet.min.js"></script>
-    <script src="~/js/blockchain/app.js"></script>
-    <script src="~/js/blockchain/hooked-web3-provider.min.js"></script>
+<script src="~/js/blockchain/lightwallet.min.js"></script>
+<script src="~/js/blockchain/app.js"></script>
+<script src="~/js/blockchain/hooked-web3-provider.min.js"></script>
 
-    <script src="~/js/app.js"></script>
-    <script src="~/js/home/homeController.js"></script>
-    <script src="~/js/game/gameController.js"></script>
-    <script src="~/js/leaderboard/leaderboardController.js"></script>
-    <script src="~/js/gamelogic/gameLogicService.js"></script>
+<script src="~/js/app.js"></script>
+<script src="~/js/home/homeController.js"></script>
+<script src="~/js/game/gameController.js"></script>
+<script src="~/js/leaderboard/leaderboardController.js"></script>
+<script src="~/js/gamelogic/gameLogicService.js"></script>
 
 </body>
 </html>

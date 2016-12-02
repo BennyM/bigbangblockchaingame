@@ -2,13 +2,13 @@
 
 <!--<p>Credits: {{credits}}, credits needed per game: {{costPerGame}}</p>-->
 
-<button class="btn btn-primary" ng-disabled="credits < costPerGame || loading || inLobby" ng-click="joinLobby()"><i class="fa fa-gamepad"></i> Join lobby</button>
+<button class="btn btn-primary" ng-disabled="credits < costPerGame || loading" ng-click="joinLobby()"><i class="fa fa-gamepad"></i> Join lobby</button>
 <p></p>
 
 <div ng-show="inLobby">
     <h3>Find player...</h3>
     <div class="list-group">
-        <a class="list-group-item" ng-repeat="player in availablePlayers | orderBy:'name'" ng-click="newGame(player.id)">
+        <a class="list-group-item" ng-repeat="player in availablePlayers | orderBy:'name'" ng-click="newGame(player.id)" ng-disabled="loading">
             {{player.name}}
         </a>
     </div>
@@ -16,10 +16,14 @@
 
 <h3>Games</h3>
 <div class="list-group">
-    <a class="list-group-item" ng-repeat="game in games" ui-sref="game({ gameid: game.id })">
+    <a class="list-group-item" ng-repeat="game in games | orderBy:'id'" ui-sref="game({ gameid: game.id })">
         {{game.name}}
         <span class="label label-default pull-right" ng-show="game.state === states.busy">busy <span ng-show="game.draws > 0">(draws: {{game.draws}})</span></span>
         <span class="label label-success pull-right" ng-show="game.state === states.won">won</span>
         <span class="label label-danger pull-right" ng-show="game.state === states.lost">lost</span>
     </a>
 </div>
+
+<hr/>
+
+<p>Your account: {{account}}</p>

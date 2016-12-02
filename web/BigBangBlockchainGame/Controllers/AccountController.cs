@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
@@ -71,7 +72,7 @@ namespace BigBangBlockchainGame.Controllers
 
 
 
-                var response = await client.PostAsync("http://clbrewaji.westeurope.cloudapp.azure.com/", new StringContent("etherAddress=" + address, Encoding.UTF8, "application/x-www-form-urlencoded"));
+                var response = await client.PostAsync(ConfigurationManager.AppSettings["blockchainUrl"], new StringContent("etherAddress=" + address, Encoding.UTF8, "application/x-www-form-urlencoded"));
                 response.EnsureSuccessStatusCode();
                 
             }
