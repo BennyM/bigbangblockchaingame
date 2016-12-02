@@ -77,6 +77,10 @@
       <HintPath>..\packages\Nethereum.JsonRpc.Client.1.0.3\lib\net451\Nethereum.JsonRpc.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Nethereum.JsonRpc.IpcClient, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nethereum.JsonRpc.IpcClient.1.0.3\lib\net451\Nethereum.JsonRpc.IpcClient.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Nethereum.RPC, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nethereum.RPC.1.0.3\lib\net451\Nethereum.RPC.dll</HintPath>
       <Private>True</Private>

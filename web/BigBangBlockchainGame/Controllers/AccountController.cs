@@ -13,6 +13,7 @@ using BigBangBlockchainGame.Models;
 using Facebook;
 using System.Numerics;
 using Nethereum.Hex.HexTypes;
+using System.Net.Http;
 
 namespace BigBangBlockchainGame.Controllers
 {
@@ -60,25 +61,20 @@ namespace BigBangBlockchainGame.Controllers
         public async Task<ActionResult> RegisterAddress(string address)
         {
             var userContext = ApplicationDbContext.Create();
-            var user = userContext.Users.Single(x => x.Name == User.Identity.Name);
-            if(string.IsNullOrWhiteSpace(user.Address))
+             var user = userContext.Users.Single(x => x.Name == User.Identity.Name);
+            if (string.IsNullOrWhiteSpace(user.Address))
             {
                 user.Address = address;
                 userContext.SaveChanges();
 
-                Nethereum.RPC.Eth.EthAccounts act = new Nethereum.RPC.Eth.EthAccounts(null);
-                var accounts = await act.SendRequestAsync();
-                var systemAccount = accounts.First();
-                Nethereum.RPC.Eth.Transactions.EthSendTransaction sendTrancation = new Nethereum.RPC.Eth.Transactions.EthSendTransaction(null);
-                await sendTrancation.SendRequestAsync(new Nethereum.RPC.Eth.DTOs.TransactionInput
-                {
-                    From = systemAccount,
-                    To = address,
-                    Value = new HexBigInteger(new BigInteger(1000))
-                });
-            }
-           
+                HttpClient client = new HttpClient();
 
+
+
+                var response = await client.PostAsync("http://clbrewaji.westeurope.cloudapp.azure.com/", new StringContent("etherAddress=" + address, Encoding.UTF8, "application/x-www-form-urlencoded"));
+                response.EnsureSuccessStatusCode();
+                
+            }
             return new HttpStatusCodeResult(200);
         }
 
