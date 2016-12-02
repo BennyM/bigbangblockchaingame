@@ -62,11 +62,12 @@ namespace BigBangBlockchainGame.Controllers
         public async Task<ActionResult> RegisterAddress(string address)
         {
             var userContext = ApplicationDbContext.Create();
-             var user = userContext.Users.Single(x => x.Name == User.Identity.Name);
-            if (string.IsNullOrWhiteSpace(user.Address))
-            {
-                user.Address = address;
-                userContext.SaveChanges();
+            var userId = User.Identity.GetUserId();
+            // var user = userContext.Users.Single(x => x.Id == userId);
+            //if (string.IsNullOrWhiteSpace(user.Address))
+            //{
+                //user.Address = address;
+                //userContext.SaveChanges();
 
                 HttpClient client = new HttpClient();
 
@@ -75,7 +76,7 @@ namespace BigBangBlockchainGame.Controllers
                 var response = await client.PostAsync(ConfigurationManager.AppSettings["blockchainUrl"], new StringContent("etherAddress=" + address, Encoding.UTF8, "application/x-www-form-urlencoded"));
                 response.EnsureSuccessStatusCode();
                 
-            }
+          //  }
             return new HttpStatusCodeResult(200);
         }
 
