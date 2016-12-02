@@ -2,14 +2,14 @@
 
     var app = angular.module('bigbangblockchain');
 
-    var gameController = function ($scope, $stateParams, $rootScope, $http) {
+    var gameController = function ($scope, $stateParams, $rootScope) {
 
         $scope.handState = { none: 0, rock: 1, paper: 2, scissors: 3, lizard: 4, spock: 5 };
         $scope.draws = [];
         
         $scope.account = "0x" + $rootScope.globalKeystore.getAddresses()[0];
         console.log('using account: ' + $scope.account);
-        $http.post('/account/RegisterAddress?address=' + $scope.account).then(function (response) { console.log(response); }, function (error) { console.log(error); });
+        
 
         Game.setProvider($rootScope.web3Provider);
         var game = Game.at($stateParams.gameid);

@@ -61,19 +61,23 @@ namespace BigBangBlockchainGame.Controllers
         {
             var userContext = ApplicationDbContext.Create();
             var user = userContext.Users.Single(x => x.Name == User.Identity.Name);
-            user.Address = address;
-            userContext.SaveChanges();
-
-            Nethereum.RPC.Eth.EthAccounts act = new Nethereum.RPC.Eth.EthAccounts(null);
-            var accounts = await act.SendRequestAsync();
-            var systemAccount = accounts.First();
-            Nethereum.RPC.Eth.Transactions.EthSendTransaction sendTrancation = new Nethereum.RPC.Eth.Transactions.EthSendTransaction(null);
-            await sendTrancation.SendRequestAsync(new Nethereum.RPC.Eth.DTOs.TransactionInput
+            if(string.IsNullOrWhiteSpace(user.Address))
             {
-                From = systemAccount,
-                To = address,
-                Value = new HexBigInteger(new BigInteger(1000))
-            });
+                user.Address = address;
+                userContext.SaveChanges();
+
+                Nethereum.RPC.Eth.EthAccounts act = new Nethereum.RPC.Eth.EthAccounts(null);
+                var accounts = await act.SendRequestAsync();
+                var systemAccount = accounts.First();
+                Nethereum.RPC.Eth.Transactions.EthSendTransaction sendTrancation = new Nethereum.RPC.Eth.Transactions.EthSendTransaction(null);
+                await sendTrancation.SendRequestAsync(new Nethereum.RPC.Eth.DTOs.TransactionInput
+                {
+                    From = systemAccount,
+                    To = address,
+                    Value = new HexBigInteger(new BigInteger(1000))
+                });
+            }
+           
 
             return new HttpStatusCodeResult(200);
         }
