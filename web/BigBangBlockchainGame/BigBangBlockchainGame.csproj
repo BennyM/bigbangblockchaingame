@@ -258,6 +258,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\PublishProfiles\3bg - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\3bg.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201611302133421_InitialCreate.resx">
