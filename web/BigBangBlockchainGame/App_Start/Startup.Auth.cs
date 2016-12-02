@@ -78,11 +78,11 @@ namespace BigBangBlockchainGame
                 Scope = { "email" }
             });
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = "306327638142-4gcu4g742c9e5uig8no84iqi86q54r2q.apps.googleusercontent.com",
+                ClientSecret = "_kUrtZnDxeuWWe5jXVNZXkCo"
+            });
         }
     }
 }
