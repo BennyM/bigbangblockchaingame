@@ -5,6 +5,7 @@
     var gameController = function ($scope, $stateParams, $rootScope, $http) {
 
         $scope.handState = { none: 0, rock: 1, paper: 2, scissors: 3, lizard: 4, spock: 5 };
+        $scope.draws = [];
         
         $scope.account = "0x" + $rootScope.globalKeystore.getAddresses()[0];
         console.log('using account: ' + $scope.account);
@@ -43,6 +44,26 @@
                         }
                     });
                 }
+            });
+            var drawEvents = game.Draw({}, { fromBlock: 0, toBlock: 'latest' });
+            drawEvents.get(function (error, result) {
+                result.forEach(function(e) {
+                    $scope.$apply(function() {
+                        $scope.draws.push({
+                            state: parseInt(e.args.draw)
+                        });
+                    });
+                });
+            });
+            var drawEvent = game.Draw();
+            drawEvent.watch(function (error, result) {
+                $scope.$apply(function () {
+                    $scope.playedHand = $scope.handState.none;
+                    $scope.otherPlayerPlayedHand = $scope.handState.none;
+                    $scope.draws.push({
+                        state: parseInt(result.args.draw)
+                    });
+                });
             });
 
             game.player1()

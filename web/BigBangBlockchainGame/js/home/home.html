@@ -8,7 +8,7 @@
 <div ng-show="inLobby">
     <h3>Find player...</h3>
     <div class="list-group">
-        <a class="list-group-item" ng-repeat="player in availablePlayers" ng-click="newGame(player.id)">
+        <a class="list-group-item" ng-repeat="player in availablePlayers | orderBy:'name'" ng-click="newGame(player.id)">
             {{player.name}}
         </a>
     </div>
@@ -18,7 +18,7 @@
 <div class="list-group">
     <a class="list-group-item" ng-repeat="game in games" ui-sref="game({ gameid: game.id })">
         {{game.name}}
-        <span class="label label-default pull-right" ng-show="game.state === states.busy">busy</span>
+        <span class="label label-default pull-right" ng-show="game.state === states.busy">busy <span ng-show="game.draws > 0">(draws: {{game.draws}})</span></span>
         <span class="label label-success pull-right" ng-show="game.state === states.won">won</span>
         <span class="label label-danger pull-right" ng-show="game.state === states.lost">lost</span>
     </a>
