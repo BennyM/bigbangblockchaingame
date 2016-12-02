@@ -136,16 +136,12 @@
         }
 
         $scope.games = [];
-        var gameCreatedEventsPlayer1 = lobby.GameCreated({ player1: $scope.account }, { fromBlock: 0, toBlock: 'latest' });
-        var gameCreatedEventsPlayer2 = lobby.GameCreated({ player2: $scope.account }, { fromBlock: 0, toBlock: 'latest' });
-        gameCreatedEventsPlayer1.get(function(error, result) {
-            result.forEach(function(e) {
-                addGame(error, e, true);
-            });
-        });
-        gameCreatedEventsPlayer2.get(function (error, result) {
+        var gameCreatedEventsPlayer = lobby.GameCreated({}, { fromBlock: 0, toBlock: 'latest' });
+        gameCreatedEventsPlayer.get(function (error, result) {
             result.forEach(function (e) {
-                addGame(error, e, false);
+                if (e.args.player1 === $scope.account || e.args.player2 === $scope.account) {
+                    addGame(error, e, e.args.player1 === $scope.account);
+                }
             });
         });
         var gameCreatedEventPlayer1 = lobby.GameCreated({ player1: $scope.account });
