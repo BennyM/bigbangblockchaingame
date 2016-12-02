@@ -11,10 +11,12 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using BigBangBlockchainGame.Models;
 using Facebook;
+using System.Numerics;
+using Nethereum.Hex.HexTypes;
 
 namespace BigBangBlockchainGame.Controllers
 {
-    [Authorize]
+   // [Authorize]
     public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;
@@ -52,6 +54,28 @@ namespace BigBangBlockchainGame.Controllers
             {
                 _userManager = value;
             }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> RegisterAddress(string address)
+        {
+            var userContext = ApplicationDbContext.Create();
+            var user = userContext.Users.Single(x => x.Name == User.Identity.Name);
+            user.Address = address;
+            userContext.SaveChanges();
+
+            Nethereum.RPC.Eth.EthAccounts act = new Nethereum.RPC.Eth.EthAccounts(null);
+            var accounts = await act.SendRequestAsync();
+            var systemAccount = accounts.First();
+            Nethereum.RPC.Eth.Transactions.EthSendTransaction sendTrancation = new Nethereum.RPC.Eth.Transactions.EthSendTransaction(null);
+            await sendTrancation.SendRequestAsync(new Nethereum.RPC.Eth.DTOs.TransactionInput
+            {
+                From = systemAccount,
+                To = address,
+                Value = new HexBigInteger(new BigInteger(1000))
+            });
+
+            return new HttpStatusCodeResult(200);
         }
 
         //

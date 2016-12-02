@@ -22,6 +22,8 @@ namespace BigBangBlockchainGame.Models
         }
 
         public string Name { get; set; }
+
+        public string Address { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
