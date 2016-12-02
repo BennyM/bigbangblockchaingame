@@ -9,6 +9,8 @@
         
         $scope.account = "0x" + $rootScope.globalKeystore.getAddresses()[0];
         console.log('using account: ' + $scope.account);
+        
+
         Game.setProvider($rootScope.web3Provider);
         var game = Game.at($stateParams.gameid);
 

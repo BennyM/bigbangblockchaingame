@@ -2,10 +2,11 @@
 
     var app = angular.module('bigbangblockchain');
 
-    var homeController = function ($scope, $state, $rootScope, gameLogicService) {
+    var homeController = function ($scope, $state, $rootScope, gameLogicService, $http) {
 
         var lobby;
         var account = "0x" + $rootScope.globalKeystore.getAddresses()[0];
+        $http.post('/account/RegisterAddress?address=' + account).then(function (response) { console.log(response); }, function (error) { console.log(error); });
         $scope.inLobby = false;
 
         console.log('using account: ' + account);
@@ -155,6 +156,6 @@
 
     }
 
-    app.controller('HomeController', ['$scope', '$state', '$rootScope', 'GameLogicService', homeController]);
+    app.controller('HomeController', ['$scope', '$state', '$rootScope', 'GameLogicService','$http', homeController]);
 
 })();
