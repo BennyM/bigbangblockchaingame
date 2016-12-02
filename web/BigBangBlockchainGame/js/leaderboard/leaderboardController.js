@@ -5,18 +5,40 @@
     var leaderboardController = function($scope, $rootScope, gameLogicService) {
         var highscores;
 
-        function getHighscore(player, you, joinedPlayersLength) {
-            highscores.highScoreOfPlayer.call(player.id, { from: you.id })
-                .then(function (score) {
-                    $scope.$apply(function () {
-                        $scope.leaderboard.push(player);
-                        player.amountOfGamesWon = parseInt(score);
+        function getHighscores() {
+            var highscoreChangedEvents = highscores.HighScoreChanged({}, { fromBlock: 0, toBlock: 'latest' });
+            highscoreChangedEvents.get(function (error, result) {
 
-                        if ($scope.leaderboard.length === joinedPlayersLength) {
-                            $rootScope.loading = false;
-                        }
+                var joinedPlayers = gameLogicService.getJoinedPlayers();
+                var you = gameLogicService.getYou();
+
+                joinedPlayers.forEach(function(player) {
+                    $scope.$apply(function() {
+                        var scorer = player;
+                        scorer.amountOfGamesWon = 0;
+
+                        result.forEach(function(result) {
+                            if (result.args.player === scorer.id && scorer.amountOfGamesWon < result.args.score) {
+                                scorer.amountOfGamesWon = parseInt(result.args.score);
+                            }
+                        });
+
+                        $scope.leaderboard.push(scorer);
                     });
                 });
+                $scope.$apply(function() {
+                    var scorer = you;
+
+                    result.forEach(function(result) {
+                        if (result.args.player === scorer.id) {
+                            scorer.amountOfGamesWon = parseInt(result.args.score);
+                        }
+                    });
+
+                    $scope.leaderboard.push(scorer);
+                });
+            });
+
         }
 
         $rootScope.loading = true;
@@ -25,12 +47,13 @@
                 highscores = HighScore.at(highscoresAddr);
 
                 $scope.leaderboard = [];
-                var joinedPlayers = gameLogicService.getJoinedPlayers();
-                var you = gameLogicService.getYou();
-                joinedPlayers.forEach(function (player) {
-                    getHighscore(player, you, joinedPlayers.length + 1);
-                });
-                getHighscore(you, you, joinedPlayers.length + 1);
+                //var joinedPlayers = gameLogicService.getJoinedPlayers();
+                //var you = gameLogicService.getYou();
+                //joinedPlayers.forEach(function (player) {
+                //    getHighscore(player, you, joinedPlayers.length + 1);
+                //});
+                //getHighscore(you, you, joinedPlayers.length + 1);
+                getHighscores();
 
                 var highscoreChangedEvent = highscores.HighScoreChanged();
                 highscoreChangedEvent.watch(function(error, result) {
@@ -45,6 +68,8 @@
                         });
                     });
                 });
+
+                $rootScope.loading = false;
             });
     }
 
