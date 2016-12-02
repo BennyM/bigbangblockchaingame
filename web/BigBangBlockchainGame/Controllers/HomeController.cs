@@ -10,7 +10,7 @@ namespace BigBangBlockchainGame.Controllers
         public ActionResult Index()
         {
             var gamelobbyAddress = ConfigurationManager.AppSettings["gamelobbyAddress"];
-            var blockchainUrl = ConfigurationManager.AppSettings["blockchainUrl"];
+            var blockchainUrl = ConfigurationManager.AppSettings["blockchainUrl"] + ":8545";
 
             return View(Tuple.Create(gamelobbyAddress, blockchainUrl));
         }
