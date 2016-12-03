@@ -105,6 +105,7 @@
                     //                $rootScope.loading = false;
                     //            });
                     //    });
+                    //GameLobby.new({ from: account, gas: 4000000, gasPrice: 20000000000 }).then(function(instance) {lobby = GameLobby.at(instance.address);lobby.openLobby({ from: account, gas: 4000000, gasPrice: 20000000000 }).then(function() {console.log('lobby available at: ' + instance.address);});});
 
                     //lobby = GameLobby.at('0xed58bf3bc12daee41408f2ae9d465c8379329443');
                     lobby = GameLobby.at($('#gamelobbyaddress').data('gamelobbyaddress'));

@@ -34,11 +34,7 @@
                                 $rootScope.loading = true;
                             });
                             return lobby.signup($scope.account, { from: $scope.account, gas: 4000000, gasPrice: 20000000000 })
-                                .then(function(error, result) {
-                                    if (error) {
-                                        alert(error);
-                                    }
-                                }).catch(function (error) { alert(error); });
+                                .catch(function (error) { alert(error); });
                         } else {
                             return null;
                         }
