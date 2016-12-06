@@ -51,8 +51,8 @@ namespace BigBangBlockchainGame
 
             // Uncomment the following lines to enable logging in with third party login providers
             app.UseMicrosoftAccountAuthentication(
-                clientId: "000000004C1B8F41",
-                clientSecret: "aYqh6dQiPZe5EzOTaD7JXwL");
+                clientId: "",
+                clientSecret: "");
 
             //app.UseTwitterAuthentication(new TwitterAuthenticationOptions
             //{
@@ -80,8 +80,8 @@ namespace BigBangBlockchainGame
 
             app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             {
-                ClientId = "306327638142-4gcu4g742c9e5uig8no84iqi86q54r2q.apps.googleusercontent.com",
-                ClientSecret = "_kUrtZnDxeuWWe5jXVNZXkCo"
+                ClientId = "",
+                ClientSecret = ""
             });
         }
     }
