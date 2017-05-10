@@ -6,3 +6,4 @@ docker stop
 docker rm
 docker ls -a
 docker build -f FILENAME -t NAME .
+docker run -v $(pwd):/var/code

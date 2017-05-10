@@ -1,6 +1,6 @@
 pragma solidity ^0.4.0;
 
-import "HighScore.sol";
+import "./HighScore.sol";
 
 contract Game {
 

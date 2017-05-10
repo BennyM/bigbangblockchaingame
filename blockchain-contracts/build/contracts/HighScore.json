@@ -1,0 +1,106 @@
+{
+  "contract_name": "HighScore",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "gameAddr",
+          "type": "address"
+        },
+        {
+          "name": "lobbyAddr",
+          "type": "address"
+        }
+      ],
+      "name": "addAllowedGame",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "player",
+          "type": "address"
+        }
+      ],
+      "name": "highScoreOfPlayer",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "player",
+          "type": "address"
+        },
+        {
+          "name": "gameAddr",
+          "type": "address"
+        }
+      ],
+      "name": "increaseHighScore",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "leaderboard",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "name": "lobbyAddr",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "player",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "score",
+          "type": "uint256"
+        }
+      ],
+      "name": "HighScoreChanged",
+      "type": "event"
+    }
+  ],
+  "unlinked_binary": "0x606060405234610000576040516020806102de83398101604052515b60028054600160a060020a031916600160a060020a0383161790555b505b610296806100486000396000f300606060405263ffffffff60e060020a60003504166339912329811461004557806347d70fb5146100665780637c42c7c014610091578063d1d33d20146100b2575b610000565b3461000057610064600160a060020a03600435811690602435166100dd565b005b346100005761007f600160a060020a036004351661016c565b60408051918252519081900360200190f35b3461000057610064600160a060020a036004358116906024351661018b565b005b346100005761007f600160a060020a0360043516610258565b60408051918252519081900360200190f35b600254600160a060020a03828116911614156101675760018054806001018281815481835581811511610135576000838152602090206101359181019083015b80821115610131576000815560010161011d565b5090565b5b505050916000526020600020900160005b8154600160a060020a038087166101009390930a92830292021916179055505b5b5050565b600160a060020a0381166000908152602081905260409020545b919050565b6000805b60015460ff821610156101f25782600160a060020a031660018260ff16815481101561000057906000526020600020900160005b9054906101000a9004600160a060020a0316600160a060020a031614156101e957600191505b5b60010161018f565b811561025157600160a060020a0384166000818152602081815260409182902080546001019081905582519384529083015280517f1c4b69fc54fa34dff34d6cd2b8c24da36dcda33ce442b9a509038612fb33000e9281900390910190a15b5b50505050565b600060208190529081526040902054815600a165627a7a72305820a33b2db79d5051ad0014e7923cbc3d96486e800e2e4b6e5cef8fc070e17516320029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1493390925989
+}

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.0;
 
-import "Game.sol";
-import "HighScore.sol";
+import "./Game.sol";
+import "./HighScore.sol";
 
 contract GameLobby{
 
@@ -32,6 +32,16 @@ contract GameLobby{
             }
         }
         return gameCount;
+    }
+
+    function countUsersInLobby() constant returns (uint){
+        uint playerCount = 0;
+        for (var countIndex = 0; countIndex < availablePlayers.length; countIndex++) {
+            playerCount = playerCount + 1;
+        }
+        return playerCount;
+
+
     }
 
     function gamesOfUser(uint skipGames) constant returns (address[])
