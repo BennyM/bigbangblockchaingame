@@ -1,4 +1,4 @@
-// Specifically request an abstraction for MetaCoin
+/*// Specifically request an abstraction for MetaCoin
 var GameLobby = artifacts.require("GameLobby");
 
 contract('GameLobby', function(accounts) {
@@ -18,4 +18,4 @@ contract('GameLobby', function(accounts) {
         assert.equal(1, count);
       });
     });
-  });
+  });*/
