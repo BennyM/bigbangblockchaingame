@@ -1,0 +1,23 @@
+using System;
+using Microsoft.EntityFrameworkCore;
+
+namespace api.Data 
+{
+    public class Player 
+    {
+        public Guid Id { get; set; }
+        public string Email { get; set; }
+        public string Nickname { get; set; }
+        public Guid LousySecurityKey { get; set; }
+    }
+
+    public class BbbgContext : DbContext
+    {
+        public BbbgContext(DbContextOptions<BbbgContext> options)
+            : base(options)
+        {            
+        }
+
+        public DbSet<Player> Players { get; set; }
+    }
+}
