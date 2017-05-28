@@ -8,9 +8,10 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(BbbgContext))]
-    partial class BbbgContextModelSnapshot : ModelSnapshot
+    [Migration("20170528150850_AddedUniqueEmailConstraintToPlayer")]
+    partial class AddedUniqueEmailConstraintToPlayer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")

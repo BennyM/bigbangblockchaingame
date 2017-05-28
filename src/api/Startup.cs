@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using api.Data;
+﻿using api.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using api.Util;
 
 namespace api
 {
@@ -40,6 +37,8 @@ namespace api
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.UseLousySecurity();
 
             app.UseMvc();
         }
