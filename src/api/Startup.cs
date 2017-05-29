@@ -29,6 +29,7 @@ namespace api
             // Add framework services.
             services.AddDbContext<BbbgContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddCors();
             services.AddMvc();
         }
 
@@ -38,6 +39,11 @@ namespace api
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            app.UseCors(builder => 
+                builder.WithOrigins("http://localhost:5001") // todo fix urls
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials());
             app.UseLousySecurity();
 
             app.UseMvc();
