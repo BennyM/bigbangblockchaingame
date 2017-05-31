@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Http } from '@angular/http';
 import { Hands } from "../../Hands";
-
+import * as randomstring from 'randomstring';
 
 @Component({
     selector: 'choose-hand',
@@ -17,5 +17,6 @@ export class ChooseHandComponent {
 
     playHand(hand : Hands){
         console.log(hand);
+      console.log(randomstring.generate(7));
     }
 }
