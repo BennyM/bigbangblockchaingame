@@ -17,10 +17,10 @@ export class web3providerservice {
                 rpcUrl: 'http://bclkihf6w.westeurope.cloudapp.azure.com:8545'
             }));
             var opts = {
-                getAccounts: function () {
+                getAccounts: () => {
                     return WalletService.getOrCreateVault().getAddresses();
                 },
-                signTransaction: function (tx) {
+                signTransaction: (tx) => {
                     WalletService.getOrCreateVault().signTransaction(tx);
                 }
             };
