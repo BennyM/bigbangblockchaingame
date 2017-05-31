@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Nethereum.Web3;
+using System.Collections.Generic;
+using System.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Data
 {
@@ -21,6 +24,21 @@ namespace api.Data
             _context = context;
             _account = account;
         }
+        
+        [Route("")]
+        [HttpGet]
+        public IEnumerable<GameOverviewModel> GamesOfUser()
+        {
+            var userId = new Guid(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);
+            return _context.Games
+                .Where(x => x.ChallengerId == userId || x.OpponentId == userId)
+                .Select(x => new GameOverviewModel{
+                    OpponentName = x.Opponent.Nickname,
+                    ChallengerName = x.Challenger.Nickname,
+                    Address = x.Address
+                } );
+        }
+
 
         [HttpPost]
         [Route("")]
@@ -32,6 +50,7 @@ namespace api.Data
                 ChallengerId = challengerId,
                 OpponentId = oponentId,
                 ChallengerHand = hashedHand,
+                DateCreated = DateTime.UtcNow
              };
              _context.Games.Add(g);
              _context.SaveChanges();
@@ -62,4 +81,13 @@ namespace api.Data
             _context.SaveChanges();
         }
     }
+
+public class GameOverviewModel
+{
+
+    public string OpponentName {get;set;}
+    public string ChallengerName {get;set;}
+    public string Address {get;set;}
+}
+
 }
