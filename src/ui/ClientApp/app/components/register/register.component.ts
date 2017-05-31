@@ -1,3 +1,4 @@
+import { WalletService } from './../../services/wallet.service';
 import { UserService } from './../../services/user.service';
 import { Component, enableProdMode } from '@angular/core';
 import { Router } from "@angular/router";

@@ -13,7 +13,7 @@ using Nethereum.RPC.Eth.DTOs;
 
 namespace api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/accounts")]
     public class AccountsController : Controller
     {
         private BbbgContext _context;
@@ -26,6 +26,7 @@ namespace api.Controllers
         }
         
         [Authorize]
+        [HttpPost]
         public async Task<string> Post(string address)
         {
             var userId = new Guid(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);

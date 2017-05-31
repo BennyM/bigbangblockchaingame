@@ -18,10 +18,10 @@ export class web3providerservice {
             }));
             var opts = {
                 getAccounts: () => {
-                    return WalletService.getOrCreateVault().getAddresses();
+                    return WalletService.getWallet().getAddresses();
                 },
                 signTransaction: (tx) => {
-                    WalletService.getOrCreateVault().signTransaction(tx);
+                    WalletService.getWallet().signTransaction(tx);
                 }
             };
             var hookedWalletProvider = new HookedWalletSubprovider(opts);
