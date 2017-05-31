@@ -18,6 +18,8 @@ namespace api.Data
             _context = context;
         }
 
+        [HttpPost]
+        [Route("")]
         public long CreateGame(Guid oponentId, string hashedHand)
         {
              var challengerId = new Guid(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);
@@ -30,6 +32,16 @@ namespace api.Data
              _context.Games.Add(g);
              _context.SaveChanges();
              return g.Id;
+        }
+
+        [HttpPost]
+        [Route("{id}/hand")]
+        public void PlayHand(long id, string hashedHand)
+        {
+            var opponentId = new Guid(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);
+            var game = _context.Games.Single(x => x.Id == id && x.OpponentId == opponentId  && x.OpponentHand == null);
+            game.OpponentHand = hashedHand;
+            _context.SaveChanges();
         }
     }
 }
