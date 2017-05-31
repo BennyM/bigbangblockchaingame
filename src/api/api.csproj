@@ -20,4 +20,7 @@
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.0">
     </DotNetCliToolReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="BlindGame.json" />
+  </ItemGroup>
 </Project>

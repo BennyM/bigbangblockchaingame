@@ -9,6 +9,9 @@ using Nethereum.Web3;
 using System.Collections.Generic;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace api.Data
 {
@@ -24,7 +27,7 @@ namespace api.Data
             _context = context;
             _account = account;
         }
-        
+
         [Route("")]
         [HttpGet]
         public IEnumerable<GameOverviewModel> GamesOfUser()
@@ -32,11 +35,12 @@ namespace api.Data
             var userId = new Guid(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);
             return _context.Games
                 .Where(x => x.ChallengerId == userId || x.OpponentId == userId)
-                .Select(x => new GameOverviewModel{
+                .Select(x => new GameOverviewModel
+                {
                     OpponentName = x.Opponent.Nickname,
                     ChallengerName = x.Challenger.Nickname,
                     Address = x.Address
-                } );
+                });
         }
 
 
@@ -44,17 +48,17 @@ namespace api.Data
         [Route("")]
         public long CreateGame(Guid oponentId, string hashedHand)
         {
-             var challengerId = new Guid(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);
-             Game g = new Game
-             {
+            var challengerId = new Guid(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);
+            Game g = new Game
+            {
                 ChallengerId = challengerId,
                 OpponentId = oponentId,
                 ChallengerHand = hashedHand,
                 DateCreated = DateTime.UtcNow
-             };
-             _context.Games.Add(g);
-             _context.SaveChanges();
-             return g.Id;
+            };
+            _context.Games.Add(g);
+            _context.SaveChanges();
+            return g.Id;
         }
 
         [HttpPost]
@@ -62,14 +66,27 @@ namespace api.Data
         public async void PlayHand(long id, string hashedHand)
         {
             var opponentId = new Guid(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);
-            var game = _context.Games.Single(x => x.Id == id && x.OpponentId == opponentId  && x.OpponentHand == null);
+            var game = _context.Games.Single(x => x.Id == id && x.OpponentId == opponentId && x.OpponentHand == null);
             game.OpponentHand = hashedHand;
             _context.SaveChanges();
 
-            var abi = "";
-            var byteCode ="";
+
+            var assembly = typeof(GamesController).GetTypeInfo().Assembly;
+            string abi = null;
+            string binary = null;
+            using (Stream resource = assembly.GetManifestResourceStream("api.BlindGame.json"))
+            {
+                    using(var streamReader = new StreamReader(resource)){
+                        var contract = streamReader.ReadToEnd();
+                        JObject obj = JObject.Parse(contract);
+                        abi = obj.Property("abi").Value.ToString();
+                        binary = obj.Property("unlinked_binary").Value.ToString();
+                    }
+            }
+
+           
             var web3 = new Web3();
-            var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, byteCode, _account.Value.Address, game.Challenger.Address, game.Opponent.Address, game.ChallengerHand, game.OpponentHand);
+            var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.Address, game.Challenger.Address, game.Opponent.Address, game.ChallengerHand, game.OpponentHand);
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(deployedContractResult);
             while (receipt == null)
             {
@@ -82,12 +99,12 @@ namespace api.Data
         }
     }
 
-public class GameOverviewModel
-{
+    public class GameOverviewModel
+    {
 
-    public string OpponentName {get;set;}
-    public string ChallengerName {get;set;}
-    public string Address {get;set;}
-}
+        public string OpponentName { get; set; }
+        public string ChallengerName { get; set; }
+        public string Address { get; set; }
+    }
 
 }
