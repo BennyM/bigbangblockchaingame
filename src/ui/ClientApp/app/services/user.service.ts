@@ -19,6 +19,9 @@ export class UserService {
         private walletService : WalletService) {
         if(typeof window !== 'undefined'){
             this.currentUser = JSON.parse(localStorage.getItem(this.localStorageKey));
+            if(this.currentUser){
+                walletService.getOrCreateVault(this.currentUser.lousySecurityKey);
+            }
         }
     }
 
