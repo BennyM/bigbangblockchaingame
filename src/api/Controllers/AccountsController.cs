@@ -13,8 +13,6 @@ namespace api.Controllers
     [Route("api/[controller]")]
     public class AccountsController : Controller
     {
-
-        // POST api/values
         public async Task<string> Post(string address)
         {
             
@@ -28,6 +26,5 @@ namespace api.Controllers
             await web3.Eth.Transactions.SendRawTransaction.SendRequestAsync("0x" + encoded);
             return "ok";
         }
-
     }
 }
