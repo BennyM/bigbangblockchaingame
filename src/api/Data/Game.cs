@@ -12,5 +12,8 @@ namespace api.Data
         public bool Verified { get; set; }
         public Player Winner { get; set; }
         public Guid? WinnerId { get; set; }
+
+        public string ChallengerHand { get; set; }
+        public string OpponentHand { get; set; }
     }
 }
