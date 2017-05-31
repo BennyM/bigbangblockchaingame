@@ -1,21 +1,18 @@
-import { Injectable, OnInit } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Http, Headers, RequestOptions } from "@angular/http";
 
 import 'rxjs/add/operator/toPromise';
 
 @Injectable()
-export class UserService implements OnInit {
+export class UserService {
     
     private localStorageKey = "currentuser";
     private addUserUrl = 'http://localhost:5000/api/players' // todo fix urls
     private requestOptions = new RequestOptions({headers: new Headers({'Content-Type': 'application/json'})});
 
-    currentUser : User;
+    currentUser: User;
         
     constructor(private http: Http) {
-    }
-
-    ngOnInit(): void {
         if(typeof window !== 'undefined'){
             this.currentUser = JSON.parse(localStorage.getItem(this.localStorageKey));
         }
@@ -30,7 +27,7 @@ export class UserService implements OnInit {
                 this.currentUser.nickname = nickname;
                 this.currentUser.lousySecurityKey = response.text();
 
-                if(typeof window !== 'undefined'){
+                if(typeof window !== 'undefined') {
                     localStorage.setItem(this.localStorageKey, JSON.stringify(this.currentUser));
                 }
             });
