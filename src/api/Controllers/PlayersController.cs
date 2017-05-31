@@ -23,7 +23,11 @@ namespace api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var players = await _context.Players.Select(x => new { x.Id, x.Nickname}).ToListAsync();
+            var players = await _context.Players
+                .Where(x=> x.Address != null)
+                .Select(x => new { x.Id, x.Nickname})
+                .OrderBy(x => x.Nickname)
+                .ToListAsync();
             return Ok(players);
         }
 

@@ -1,0 +1,84 @@
+<h2>Rock, paper, scissors, lizard, spock!</h2>
+
+<div class="gameWaiting" *ngIf="playedHand !== handState.none && winner === '0x0000000000000000000000000000000000000000'">
+    You played
+    <span *ngIfw="playedHand == handState.rock">Rock</span>
+    <span *ngIf="playedHand == handState.paper">Paper</span>
+    <span *ngIf="playedHand == handState.scissors">Scissors</span>
+    <span *ngIf="playedHand == handState.lizard">Lizard</span>
+    <span *ngIf="playedHand == handState.spock">Spock</span> . Waiting for other player...
+    <p></p>
+    <div class="row">
+        <div class="col-xs-2 col-xs-offset-3">
+            <i class="fa fa-hand-rock-o" *ngIf="playedHand === handState.rock"></i>
+            <i class="fa fa-hand-paper-o" *ngIfw="playedHand === handState.paper"></i>
+            <i class="fa fa-hand-scissors-o" *ngIfw="playedHand === handState.scissors"></i>
+            <i class="fa fa-hand-lizard-o" *ngIf="playedHand === handState.lizard"></i>
+            <i class="fa fa-hand-spock-o" *ngIf="playedHand === handState.spock"></i>
+            <br />You
+        </div>
+    </div>
+</div>
+
+<div class="gameResults" ngClass="{'won': winner === account, 'lost': winner !== account}" *ngIf="playedHand !== handState.none && winner !== '0x0000000000000000000000000000000000000000'">
+    <span *ngIf="winner === account">You won!</span>
+    <span *ngIf="winner !== account">You lost!</span> You played
+    <span *ngIf="playedHand === handState.rock">Rock</span>
+    <span *ngIf="playedHand === handState.paper">Paper</span>
+    <span *ngIf="playedHand === handState.scissors">Scissors</span>
+    <span *ngIf="playedHand === handState.lizard">Lizard</span>
+    <span *ngIf="playedHand === handState.spock">Spock</span> . Other player played
+    <span *ngIf="otherPlayerPlayedHand === handState.rock">Rock</span>
+    <span *ngIf="otherPlayerPlayedHand === handState.paper">Paper</span>
+    <span *ngIf="otherPlayerPlayedHand === handState.scissors">Scissors</span>
+    <span *ngIf="otherPlayerPlayedHand === handState.lizard">Lizard</span>
+    <span *ngIf="otherPlayerPlayedHand === handState.spock">Spock</span> .
+    <p></p>
+    <div class="row">
+        <div class="col-xs-2 col-xs-offset-3">
+            <i class="fa fa-hand-rock-o" *ngIf="playedHand === handState.rock"></i>
+            <i class="fa fa-hand-paper-o" *ngIf="playedHand === handState.paper"></i>
+            <i class="fa fa-hand-scissors-o" *ngIf="playedHand === handState.scissors"></i>
+            <i class="fa fa-hand-lizard-o" *ngIf="playedHand === handState.lizard"></i>
+            <i class="fa fa-hand-spock-o" *ngIf="playedHand === handState.spock"></i>
+            <br/>You
+        </div>
+
+        <div class="col-xs-2 col-xs-offset-2">
+            <i class="fa fa-hand-rock-o" *ngIf="otherPlayerPlayedHand === handState.rock"></i>
+            <i class="fa fa-hand-paper-o" *ngIf="otherPlayerPlayedHand === handState.paper"></i>
+            <i class="fa fa-hand-scissors-o" *ngIf="otherPlayerPlayedHand === handState.scissors"></i>
+            <i class="fa fa-hand-lizard-o" *ngIf="otherPlayerPlayedHand === handState.lizard"></i>
+            <i class="fa fa-hand-spock-o" *ngIf="otherPlayerPlayedHand === handState.spock"></i>
+            <br />Other player
+        </div>
+    </div>
+</div>
+
+<div class="chooseHand" *ngIf="playedHand === handState.none">
+    <p *ngIf="draws.length > 0">Try again! Last game was a draw!</p>
+
+    <img src="assets/rules.png" usemap="#icons"/>
+    <map name="icons">
+        <area shape="circle" coords="175,85,50" (click)="playHand(handState.rock)">
+        <area shape="circle" coords="270,160,50" (click)="playHand(handState.lizard)">
+        <area shape="circle" coords="230,270,50" (click)="playHand(handState.spock)">
+        <area shape="circle" coords="115,270,50" (click)="playHand(handState.scissors)">
+        <area shape="circle" coords="80,160,50" (click)="playHand(handState.paper)">
+    </map>
+
+    <p *ngIf="draws.length > 0">Following {{draws.length}} hands were played and ended on a draw:
+        <div *ngFor="let draw of draws">
+            <span *ngIf="draw.state === handState.rock">Rock</span>
+            <span *ngIf="draw.state === handState.paper">Paper</span>
+            <span *ngIf="draw.state === handState.scissors">Scissors</span>
+            <span *ngIf="draw.state === handState.lizard">Lizard</span>
+            <span *ngIf="draw.state === handState.spock">Spock</span>
+        </div>
+    </p>
+</div>
+
+<hr/>
+
+<a ui-sref="rules">Rules</a>
+<p>Your account: {{account}}</p>

@@ -31,6 +31,8 @@ namespace api
 
             services.AddCors();
             services.AddMvc();
+            services.Configure<EthereumTransferAccount>(Configuration.GetSection("EthereumAccount"));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
