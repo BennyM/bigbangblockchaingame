@@ -31,7 +31,7 @@ namespace api
 
             services.AddCors();
             services.AddMvc();
-            services.Configure<EthereumTransferAccount>(Configuration.GetSection("EthereumAccount"));
+            services.Configure<EthereumSettings>(Configuration.GetSection("Ethereum"));
 
         }
 

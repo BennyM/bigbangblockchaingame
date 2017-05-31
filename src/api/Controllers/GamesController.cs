@@ -21,8 +21,8 @@ namespace api.Data
         : Controller
     {
         private BbbgContext _context;
-        private IOptions<EthereumTransferAccount> _account;
-        public GamesController(BbbgContext context, IOptions<EthereumTransferAccount> account)
+        private IOptions<EthereumSettings> _account;
+        public GamesController(BbbgContext context, IOptions<EthereumSettings> account)
         {
             _context = context;
             _account = account;
@@ -85,8 +85,8 @@ namespace api.Data
             }
 
            
-            var web3 = new Web3();
-            var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.Address, game.Challenger.Address, game.Opponent.Address, game.ChallengerHand, game.OpponentHand);
+            var web3 = new Web3(_account.Value.Address);
+            var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, game.Challenger.Address, game.Opponent.Address, game.ChallengerHand, game.OpponentHand);
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(deployedContractResult);
             while (receipt == null)
             {
