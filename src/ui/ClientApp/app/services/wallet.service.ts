@@ -9,15 +9,15 @@ import * as HookedWalletSubprovider from 'web3-provider-engine/subproviders/hook
 export class WalletService {
 
     private superSecurePassword: string = 'password';
+    private ks: any;
 
     getOrCreateVault(): any {
-        let ks;
-        if (typeof window !== "undefined") {
+        if (typeof window !== "undefined" && !this.ks) {
             let serializedKeystore = localStorage.getItem('keystore');
 
             if (serializedKeystore) {
-                ks = keystore.deserialize(serializedKeystore);
-                ks.passwordProvider =  (callback) =>{
+                this.ks = keystore.deserialize(serializedKeystore);
+                this.ks.passwordProvider = (callback) => {
                     callback(null, this.superSecurePassword);
                 };
             } else {
@@ -25,17 +25,17 @@ export class WalletService {
                     password: this.superSecurePassword
                 }, (err, newStore) => {
                     if (newStore) {
-                        ks = newStore;
-                        ks.passwordProvider = (callback) => {
+                        this.ks = newStore;
+                        this.ks.passwordProvider = (callback) => {
                             callback(null, this.superSecurePassword);
                         };
-                        ks.keyFromPassword(this.superSecurePassword, (err, pwDerivedKey) => {
+                        this.ks.keyFromPassword(this.superSecurePassword, (err, pwDerivedKey) => {
                             if (err) throw err;
 
-                            ks.generateNewAddress(pwDerivedKey, 1);
-                            var addr = ks.getAddresses();
+                            this.ks.generateNewAddress(pwDerivedKey, 1);
 
-                            var serializedKs = ks.serialize();
+
+                            var serializedKs = this.ks.serialize();
                             localStorage.setItem('keystore', serializedKs);
 
 
@@ -43,7 +43,7 @@ export class WalletService {
                     }
                 });
             }
-            return ks;
+            return this.ks;
         }
 
     }

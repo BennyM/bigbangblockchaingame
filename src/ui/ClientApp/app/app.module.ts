@@ -1,3 +1,5 @@
+import { web3providerservice } from './services/web3provider.service';
+import { WalletService } from './services/wallet.service';
 import { UserService } from './services/user.service';
 import { AuthenticationCanActivateService } from './services/authentication.can-activate.service';
 import { NgModule } from '@angular/core';
@@ -19,7 +21,7 @@ import { FormsModule } from "@angular/forms";
         PlayerListComponent,
         RegisterComponent
     ],
-    providers: [UserService, AuthenticationCanActivateService],
+    providers: [UserService, AuthenticationCanActivateService, WalletService, web3providerservice],
     imports: [
         UniversalModule, // Must be first import. This automatically imports BrowserModule, HttpModule, and JsonpModule too.
         FormsModule,
