@@ -1,3 +1,4 @@
+import { ChooseHandComponent } from './components/choose-hand/choose-hand.component';
 import { web3providerservice } from './services/web3provider.service';
 import { WalletService } from './services/wallet.service';
 import { UserService } from './services/user.service';
@@ -19,7 +20,8 @@ import { FormsModule } from "@angular/forms";
         NavMenuComponent,
         HomeComponent,
         PlayerListComponent,
-        RegisterComponent
+        RegisterComponent,
+        ChooseHandComponent
     ],
     providers: [UserService, AuthenticationCanActivateService, WalletService, web3providerservice],
     imports: [
@@ -30,6 +32,7 @@ import { FormsModule } from "@angular/forms";
             { path: 'home', component: HomeComponent, canActivate: [AuthenticationCanActivateService]},
             { path: 'players', component: PlayerListComponent},
             { path: 'register', component: RegisterComponent},
+            { path: 'choose', component: ChooseHandComponent},
             { path: '**', redirectTo: 'home'}
         ])
     ]
