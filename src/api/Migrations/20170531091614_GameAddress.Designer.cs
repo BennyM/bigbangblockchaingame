@@ -8,9 +8,10 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(BbbgContext))]
-    partial class BbbgContextModelSnapshot : ModelSnapshot
+    [Migration("20170531091614_GameAddress")]
+    partial class GameAddress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")

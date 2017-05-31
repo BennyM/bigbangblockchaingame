@@ -15,5 +15,7 @@ namespace api.Data
 
         public string ChallengerHand { get; set; }
         public string OpponentHand { get; set; }
+
+        public string Address { get; set; }
     }
 }
