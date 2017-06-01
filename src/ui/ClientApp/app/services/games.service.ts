@@ -12,7 +12,7 @@ export class GamesService {
             .get('http://localhost:5000/api/games') // todo fix urls
             .toPromise()
             .then(resp => {
-                return resp.json().data as Game[];
+                return resp.json() as Game[];
             });
     }
 }

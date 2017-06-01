@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { AuthenticatedHttp } from './../../services/authenticated-http';
 import { Component, OnInit } from '@angular/core';
 
@@ -8,7 +9,7 @@ import { Component, OnInit } from '@angular/core';
 export class PlayerListComponent implements OnInit {
     public players: Player[];
 
-    constructor(private http: AuthenticatedHttp) {
+    constructor(private http: AuthenticatedHttp, private router: Router) {
     }
 
     ngOnInit(): void {
@@ -17,6 +18,10 @@ export class PlayerListComponent implements OnInit {
             .then(resp => {
                 this.players = resp.json() as Player[];
             });
+    }
+
+    onPlayerSelect(player: Player): void {
+        this.router.navigate(['/challenge', player.id, player.nickname]);
     }
 }
 

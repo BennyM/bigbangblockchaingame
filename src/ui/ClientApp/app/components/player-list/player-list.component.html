@@ -10,7 +10,7 @@
     <tbody>
         <tr *ngFor="let player of players">
             <td>{{ player.nickname }}</td>
-            <td><button>Challenge</button></td>
+            <td><button (click)="onPlayerSelect(player)" class="btn btn-sm">Challenge</button></td>
         </tr>
     </tbody>
 </table>
