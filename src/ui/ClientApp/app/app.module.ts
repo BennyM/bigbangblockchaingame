@@ -1,5 +1,6 @@
+import { AuthenticatedHttp } from './services/authenticated-http';
 import { ChooseHandComponent } from './components/choose-hand/choose-hand.component';
-import { web3providerservice } from './services/web3provider.service';
+import { Web3ProviderService } from './services/web3provider.service';
 import { WalletService } from './services/wallet.service';
 import { UserService } from './services/user.service';
 import { AuthenticationCanActivateService } from './services/authentication.can-activate.service';
@@ -23,7 +24,7 @@ import { FormsModule } from "@angular/forms";
         RegisterComponent,
         ChooseHandComponent
     ],
-    providers: [UserService, AuthenticationCanActivateService, WalletService, web3providerservice],
+    providers: [UserService, AuthenticationCanActivateService, WalletService, Web3ProviderService, AuthenticatedHttp],
     imports: [
         UniversalModule, // Must be first import. This automatically imports BrowserModule, HttpModule, and JsonpModule too.
         FormsModule,

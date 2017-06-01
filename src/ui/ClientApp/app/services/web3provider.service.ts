@@ -6,7 +6,7 @@ import * as Web3ProviderEngine from 'web3-provider-engine';
 import * as Web3 from 'web3';
 
 @Injectable()
-export class web3providerservice {
+export class Web3ProviderService {
 
     private web3: Web3;
 
@@ -30,7 +30,5 @@ export class web3providerservice {
             engine.start();
         }
         return this.web3;
-
-
     }
 }
