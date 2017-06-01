@@ -1,25 +1,26 @@
-import { Component } from '@angular/core';
-import { Http } from '@angular/http';
-
+import { AuthenticatedHttp } from './../../services/authenticated-http';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
     selector: 'player-list',
     templateUrl: './player-list.component.html'
 })
-export class PlayerListComponent {
+export class PlayerListComponent implements OnInit {
     public players: Player[];
 
-    constructor(http: Http) {
-        console.log('test');
-      this.players = [ 
-          { name : 'Benny', gamesWon: 3, gamesPlayed : 6 },
-          { name : 'Hans', gamesWon: 3, gamesPlayed : 6 }
-      ];
+    constructor(private http: AuthenticatedHttp) {
+    }
+
+    ngOnInit(): void {
+        this.http.get('http://localhost:5000/api/players') // todo fix urls
+            .toPromise()
+            .then(resp => {
+                this.players = resp.json() as Player[];
+            });
     }
 }
 
 interface Player {
-    name : string,
-    gamesWon : number,
-    gamesPlayed : number
+    id: string;
+    nickname: string
 }

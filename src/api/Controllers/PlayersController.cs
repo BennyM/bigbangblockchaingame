@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using api.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -23,8 +24,10 @@ namespace api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
+            var userId = new Guid(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);
+
             var players = await _context.Players
-                .Where(x=> x.Address != null)
+                .Where(x=> x.Address != null && x.Id != userId)
                 .Select(x => new { x.Id, x.Nickname})
                 .OrderBy(x => x.Nickname)
                 .ToListAsync();
