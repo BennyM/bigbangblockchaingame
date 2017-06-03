@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace api.Data
 {
@@ -17,25 +16,5 @@ namespace api.Data
         public ICollection<Game> ChallengerGames {get;set;}
         [InverseProperty("Opponent")]
         public ICollection<Game> OpponentGames {get;set;}
-    }
-
-    public class BbbgContext : DbContext
-    {
-        public BbbgContext(DbContextOptions<BbbgContext> options)
-            : base(options)
-        {
-        }
-
-        public DbSet<Player> Players { get; set; }
-
-        public DbSet<Game> Games { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Player>()
-                .HasIndex(x => x.Email)
-                .IsUnique(true);
-
-        }
     }
 }

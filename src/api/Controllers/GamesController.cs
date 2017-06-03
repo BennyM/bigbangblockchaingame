@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
+using api.Util;
 
 namespace api.Data
 {
@@ -30,60 +32,63 @@ namespace api.Data
 
         [Route("")]
         [HttpGet]
-        public IEnumerable<GameOverviewModel> GamesOfUser()
+        public async Task<IEnumerable<GameOverviewModel>> GamesOfUser()
         {
             var userId = new Guid(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);
-            return _context.Games
+            
+            return await _context.Games
                 .Where(x => x.ChallengerId == userId || x.OpponentId == userId)
                 .Select(x => new GameOverviewModel
                 {
                     OpponentName = x.Opponent.Nickname,
                     ChallengerName = x.Challenger.Nickname,
                     Address = x.Address
-                });
+                })
+                .ToListAsync();
         }
-
 
         [HttpPost]
         [Route("")]
-        public long CreateGame(Guid oponentId, string hashedHand)
+        public async Task<long> CreateGame([FromBody]ChallengeOpponentModel model)
         {
             var challengerId = new Guid(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);
+
             Game g = new Game
             {
                 ChallengerId = challengerId,
-                OpponentId = oponentId,
-                ChallengerHand = hashedHand,
+                OpponentId = model.OpponentId,
+                ChallengerHand = model.HashedHand,
                 DateCreated = DateTime.UtcNow
             };
             _context.Games.Add(g);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
             return g.Id;
         }
 
         [HttpPost]
         [Route("{id}/hand")]
-        public async void PlayHand(long id, string hashedHand)
+        public async Task PlayHand(long id, string hashedHand)
         {
             var opponentId = new Guid(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);
-            var game = _context.Games.Single(x => x.Id == id && x.OpponentId == opponentId && x.OpponentHand == null);
-            game.OpponentHand = hashedHand;
-            _context.SaveChanges();
 
+            var game = await _context.Games.SingleAsync(x => x.Id == id && x.OpponentId == opponentId && x.OpponentHand == null);
+            game.OpponentHand = hashedHand;
+            await _context.SaveChangesAsync();
 
             var assembly = typeof(GamesController).GetTypeInfo().Assembly;
             string abi = null;
             string binary = null;
             using (Stream resource = assembly.GetManifestResourceStream("api.BlindGame.json"))
             {
-                    using(var streamReader = new StreamReader(resource)){
-                        var contract = streamReader.ReadToEnd();
-                        JObject obj = JObject.Parse(contract);
-                        abi = obj.Property("abi").Value.ToString();
-                        binary = obj.Property("unlinked_binary").Value.ToString();
-                    }
+                using(var streamReader = new StreamReader(resource))
+                {
+                    var contract = streamReader.ReadToEnd();
+                    JObject obj = JObject.Parse(contract);
+                    abi = obj.Property("abi").Value.ToString();
+                    binary = obj.Property("unlinked_binary").Value.ToString();
+                }
             }
-
            
             var web3 = new Web3(_account.Value.Address);
             var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, game.Challenger.Address, game.Opponent.Address, game.ChallengerHand, game.OpponentHand);
@@ -95,16 +100,20 @@ namespace api.Data
             }
             var contractAddress = receipt.ContractAddress;
             game.Address = contractAddress;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 
     public class GameOverviewModel
     {
-
         public string OpponentName { get; set; }
         public string ChallengerName { get; set; }
         public string Address { get; set; }
     }
 
+    public class ChallengeOpponentModel 
+    {
+        public Guid OpponentId { get; set; }
+        public string HashedHand { get; set; }
+    }
 }

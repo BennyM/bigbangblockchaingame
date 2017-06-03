@@ -1,4 +1,4 @@
-namespace api.Data
+namespace api.Util
 {
     public class EthereumSettings
     {
