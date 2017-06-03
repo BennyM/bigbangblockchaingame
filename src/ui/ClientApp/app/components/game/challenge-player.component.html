@@ -1,3 +1,5 @@
 <h1>Challenge {{playerName}}</h1>
 
-<choose-hand></choose-hand>
+<p>Choose the hand you want to play against {{playerName}}</p>
+
+<choose-hand (handPlayed)="onHandPlayed($event)"></choose-hand>

@@ -28,6 +28,7 @@
     "css-loader": "^0.25.0",
     "es6-shim": "^0.35.1",
     "eth-lightwallet": "^2.5.4",
+    "ethereumjs-abi": "^0.6.4",
     "event-source-polyfill": "^0.0.7",
     "expose-loader": "^0.7.1",
     "extract-text-webpack-plugin": "^2.0.0-rc",

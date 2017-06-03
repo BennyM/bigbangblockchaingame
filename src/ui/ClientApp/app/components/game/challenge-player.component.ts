@@ -1,5 +1,7 @@
+import { GamesService } from './../../services/games.service';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
+import { Hands } from "../../Hands";
 
 @Component({
     selector: 'challenge-player',
@@ -10,7 +12,7 @@ export class ChallengePlayerComponent implements OnInit {
     private playerId: string;
     private playerName: string;
 
-    constructor(private route: ActivatedRoute) {
+    constructor(private route: ActivatedRoute, private gamesService: GamesService, private router: Router) {
     }
 
     ngOnInit(): void {
@@ -20,4 +22,10 @@ export class ChallengePlayerComponent implements OnInit {
         });
     }
 
+    onHandPlayed(hand: Hands) {
+        this.gamesService.challengeOpponent(this.playerId, hand)
+            .then(() => {
+                this.router.navigate(['/home'])
+            });
+    }
 }
