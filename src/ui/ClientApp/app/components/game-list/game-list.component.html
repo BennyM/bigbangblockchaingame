@@ -10,11 +10,14 @@
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let game of gamesService.games">
+        <tr *ngFor="let game of games">
             <td>{{game.opponentName}}</td>
             <td>
                 <span *ngIf="!game.gameInitiated && !game.handPlayed">You were challenged! Respond in kind.</span>
                 <span *ngIf="game.gameInitiated">Wait for your opponent.</span>
+            </td>
+            <td>
+                <button *ngIf="!game.gameInitiated && !game.handPlayed" (click)="onRespondClick(game)" class="btn btn-sm">Respond</button>
             </td>
         </tr>
     </tbody>

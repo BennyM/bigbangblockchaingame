@@ -13,6 +13,10 @@ export class RegisterComponent {
 
     constructor(private userService: UserService, private router: Router) {
         this.newUser = new RegisterUser();
+
+        if(this.userService.currentUser != null){
+            this.router.navigate(['/home']);
+        }
     }
 
     addPlayer(): void {

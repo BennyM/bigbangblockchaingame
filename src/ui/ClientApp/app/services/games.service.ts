@@ -10,31 +10,17 @@ import * as abi from 'ethereumjs-abi';
 @Injectable()
 export class GamesService {
 
-    public observeGames: Observable<Game[]>;
-    public games: Game[] = [];
+    public gamesOfUser: Observable<Game[]>;
 
     constructor(private authenticatedHttp: AuthenticatedHttp) {
-        this.observeGames = IntervalObservable
-            .create(1000)
-            .mergeMap(() => this.authenticatedHttp.get('http://localhost:5000/api/games'))
-            .map(res => {
-                let parsed = <Game[]>res.json()
-                return parsed;
-            });
-        let subscription = this.observeGames.subscribe(
-            value => {
-                this.games = value;
-            },
-            error => { },
-            () => { }
-        );
+        this.gamesOfUser = this.getGamesOfUser();
     }
 
-    getGamesOfUser(): Promise<Game[]> {
-        return this.authenticatedHttp
-            .get('http://localhost:5000/api/games') // todo fix urls
-            .toPromise()
-            .then(resp => {
+    private getGamesOfUser(): Observable<Game[]> {
+        return Observable
+            .timer(0, 2000)
+            .mergeMap(() => this.authenticatedHttp.get('http://localhost:5000/api/games')) // todo fix urls
+            .map(resp => {
                 return resp.json() as Game[];
             });
     }
