@@ -1,0 +1,21 @@
+<table class="table">
+    <thead>
+        <tr>
+            <td>
+                Opponent
+            </td>
+            <td>
+                State
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let game of gamesService.games">
+            <td>{{game.opponentName}}</td>
+            <td>
+                <span *ngIf="!game.gameInitiated && !game.handPlayed">You were challenged! Respond in kind.</span>
+                <span *ngIf="game.gameInitiated">Wait for your opponent.</span>
+            </td>
+        </tr>
+    </tbody>
+</table>

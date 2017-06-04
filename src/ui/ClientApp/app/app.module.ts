@@ -1,3 +1,4 @@
+import { GameListComponent } from './components/game-list/game-list.component';
 import { ChallengePlayerComponent } from './components/game/challenge-player.component';
 import { Http, RequestOptions, ConnectionBackend, XHRBackend } from '@angular/http';
 import { GamesService } from './services/games.service';
@@ -26,7 +27,8 @@ import { FormsModule } from "@angular/forms";
         PlayerListComponent,
         RegisterComponent,
         ChooseHandComponent,
-        ChallengePlayerComponent
+        ChallengePlayerComponent,
+        GameListComponent
     ],
     providers: [
         UserService, 

@@ -9,7 +9,6 @@ import { Game } from '../../services/games.service';
 })
 export class HomeComponent implements OnInit {
 
-    private games: Game[] = new Array<Game>();
     private user: string;
 
     constructor(private gamesService: GamesService, private userService: UserService) {
@@ -17,7 +16,6 @@ export class HomeComponent implements OnInit {
 
     ngOnInit(): void {
         this.user = this.userService.currentUser.nickname;
-        this.gamesService.getGamesOfUser()
-            .then(games => this.games = games);
+        
     }
 }
