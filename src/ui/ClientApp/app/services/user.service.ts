@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { AuthenticatedHttp, createAuthedOptions } from './authenticated-http';
 import { WalletService } from './wallet.service';
 import { Injectable } from "@angular/core";
@@ -15,13 +16,13 @@ export class UserService {
 
     currentUser: User;
         
-    constructor(
-        private http: Http,
-        private walletService : WalletService) {
+    constructor(private http: Http, private walletService : WalletService, private router: Router) {
         if(typeof window !== 'undefined'){
             this.currentUser = JSON.parse(localStorage.getItem(this.localStorageKey));
             if(this.currentUser){
                 walletService.getOrCreateVault(this.currentUser.lousySecurityKey);
+            } else {
+                this.router.navigate(['/register']);
             }
         }
     }
@@ -38,8 +39,8 @@ export class UserService {
                     localStorage.setItem(this.localStorageKey, JSON.stringify(this.currentUser));
                 }
             })
-            .then( () =>{ 
-                return this.walletService.getOrCreateVault(this.currentUser.lousySecurityKey)
+            .then(() =>{ 
+                return this.walletService.getOrCreateVault(this.currentUser.lousySecurityKey);
             })
             .then(ks => {
                 var address = ks.getAddresses()[0];
@@ -47,7 +48,9 @@ export class UserService {
                 this.requestOptions.headers.append('Authorization', options.headers.get('Authorization'));
                 return this.http.post(this.initAccountUrl, JSON.stringify({address: address}), this.requestOptions).toPromise();
             })
-            .then(() => {});;
+            .then(() => {
+                console.log('done');
+            });
     }
 }
 

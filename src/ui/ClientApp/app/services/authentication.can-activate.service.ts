@@ -13,6 +13,6 @@ export class AuthenticationCanActivateService implements CanActivate {
         if(this.userService.currentUser != null) {
             return true;
         }
-        this.router.navigate(['/register']);
+        return false;
     }
 }

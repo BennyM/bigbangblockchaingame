@@ -5,8 +5,7 @@ import { Router } from "@angular/router";
 
 @Component({
     selector: 'register',
-    templateUrl: './register.component.html',
-    providers: [UserService]
+    templateUrl: './register.component.html'
 })
 export class RegisterComponent {
 
