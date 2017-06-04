@@ -5,15 +5,22 @@ import { Injectable } from '@angular/core';
 import { Hands } from "../Hands";
 import * as randomstring from 'randomstring';
 import * as abi from 'ethereumjs-abi';
-
+import { AngularIndexedDB } from 'angular2-indexeddb';
 
 @Injectable()
 export class GamesService {
 
     public gamesOfUser: Observable<Game[]>;
+    private db: AngularIndexedDB;
 
     constructor(private authenticatedHttp: AuthenticatedHttp) {
         this.gamesOfUser = this.getGamesOfUser();
+        this.db = new AngularIndexedDB('bbbgdb', 1);
+        this.db.createStore(1, (evt) => {
+            let objectStore = evt.currentTarget.result.createObjectStore(
+                'games', { keyPath: "id", autoIncrement: false });
+            objectStore.createIndex("address", "address", { unique: false });
+        });
     }
 
     private getGamesOfUser(): Observable<Game[]> {
@@ -21,7 +28,14 @@ export class GamesService {
             .timer(0, 2000)
             .mergeMap(() => this.authenticatedHttp.get('http://localhost:5000/api/games')) // todo fix urls
             .map(resp => {
-                return resp.json() as Game[];
+                let games = resp.json() as Game[];
+                games.forEach(item => {
+                    this.db.update('games', { id: item.id, address: item.address }).then(() => {
+                    }, (error) => {
+                        console.log(error);
+                    });
+                });
+                return games
             });
     }
 
@@ -33,19 +47,19 @@ export class GamesService {
             .post('http://localhost:5000/api/games', { opponentId: opponentId, hashedHand: hashedHand }) // todo fix urls
             .toPromise()
             .then(resp => {
-                //todo save game id + salt + hand in localstorage
+                return this.db.add('games', { salt: salt, hand: hand, id: new Number(resp.text()) })
             });
     }
 
     respondToChallenge(gameId: number, hand: Hands): Promise<void> {
         var salt = randomstring.generate(7);
         var hashedHand = '0x' + abi.soliditySHA3(['uint8', 'string'], [hand, salt]).toString('hex');
-        
+
         return this.authenticatedHttp
             .post(`http://localhost:5000/api/games/${gameId}/hand`, { hashedHand: hashedHand }) // todo fix urls
             .toPromise()
             .then(resp => {
-                //todo save game id + salt + hand in localstorage
+                return this.db.add('games', { salt: salt, hand: hand, id: gameId })
             });
     }
 }
