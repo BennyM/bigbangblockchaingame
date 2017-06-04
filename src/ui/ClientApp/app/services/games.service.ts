@@ -27,8 +27,7 @@ export class GamesService {
 
     challengeOpponent(opponentId: string, hand: Hands): Promise<void> {
         var salt = randomstring.generate(7);
-        var hashedHand = abi.soliditySHA3(['uint8', 'string'], [hand, salt]).toString('hex');
-        console.log(`Hashed hand: ${hashedHand}`);
+        var hashedHand = '0x' + abi.soliditySHA3(['uint8', 'string'], [hand, salt]).toString('hex');
 
         return this.authenticatedHttp
             .post('http://localhost:5000/api/games', { opponentId: opponentId, hashedHand: hashedHand }) // todo fix urls
@@ -37,10 +36,22 @@ export class GamesService {
                 //todo save game id + salt + hand in localstorage
             });
     }
+
+    respondToChallenge(gameId: number, hand: Hands): Promise<void> {
+        var salt = randomstring.generate(7);
+        var hashedHand = '0x' + abi.soliditySHA3(['uint8', 'string'], [hand, salt]).toString('hex');
+        
+        return this.authenticatedHttp
+            .post(`http://localhost:5000/api/games/${gameId}/hand`, { hashedHand: hashedHand }) // todo fix urls
+            .toPromise()
+            .then(resp => {
+                //todo save game id + salt + hand in localstorage
+            });
+    }
 }
 
 export class Game {
-    OpponentName: string;
+    opponentName: string;
     address: string;
     id: number;
     handPlayed: boolean;

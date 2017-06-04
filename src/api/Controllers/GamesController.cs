@@ -14,6 +14,7 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 using api.Util;
+using Nethereum.Hex.HexConvertors.Extensions;
 
 namespace api.Data
 {
@@ -72,12 +73,15 @@ namespace api.Data
 
         [HttpPost]
         [Route("{id}/hand")]
-        public async Task PlayHand(long id, string hashedHand)
+        public async Task PlayHand(long id, [FromBody]RespondToChallengeModel model)
         {
             var opponentId = new Guid(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);
 
-            var game = await _context.Games.SingleAsync(x => x.Id == id && x.OpponentId == opponentId && x.OpponentHand == null);
-            game.OpponentHand = hashedHand;
+            var game = await _context.Games
+                .Include(x => x.Challenger)
+                .Include(x => x.Opponent)
+                .SingleAsync(x => x.Id == id && x.OpponentId == opponentId && x.OpponentHand == null);
+            game.OpponentHand = model.HashedHand;
             await _context.SaveChangesAsync();
 
             var assembly = typeof(GamesController).GetTypeInfo().Assembly;
@@ -95,7 +99,8 @@ namespace api.Data
             }
 
             var web3 = new Web3(_account.Value.Address);
-            var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, game.Challenger.Address, game.Opponent.Address, game.ChallengerHand, game.OpponentHand);
+            var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, 
+                game.Challenger.Address, game.Opponent.Address, game.ChallengerHand, game.OpponentHand);
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(deployedContractResult);
             while (receipt == null)
             {
@@ -124,6 +129,11 @@ namespace api.Data
     public class ChallengeOpponentModel
     {
         public Guid OpponentId { get; set; }
+        public string HashedHand { get; set; }
+    }
+
+    public class RespondToChallengeModel 
+    {
         public string HashedHand { get; set; }
     }
 }

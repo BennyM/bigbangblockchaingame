@@ -1,3 +1,4 @@
+import { RespondChallengeComponent } from './components/game/respond-challenge.component';
 import { GameListComponent } from './components/game-list/game-list.component';
 import { ChallengePlayerComponent } from './components/game/challenge-player.component';
 import { Http, RequestOptions, ConnectionBackend, XHRBackend } from '@angular/http';
@@ -28,7 +29,8 @@ import { FormsModule } from "@angular/forms";
         RegisterComponent,
         ChooseHandComponent,
         ChallengePlayerComponent,
-        GameListComponent
+        GameListComponent,
+        RespondChallengeComponent
     ],
     providers: [
         UserService, 
@@ -47,6 +49,7 @@ import { FormsModule } from "@angular/forms";
             { path: 'players', component: PlayerListComponent, canActivate: [AuthenticationCanActivateService]},
             { path: 'register', component: RegisterComponent},
             { path: 'challenge/:playerid/:playername', component: ChallengePlayerComponent, canActivate: [AuthenticationCanActivateService]},
+            { path: 'respond-challenge/:gameid/:playername', component: RespondChallengeComponent, canActivate: [AuthenticationCanActivateService]},
             { path: '**', redirectTo: 'home'}
         ])
     ]
