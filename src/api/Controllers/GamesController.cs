@@ -15,6 +15,8 @@ using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 using api.Util;
 using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Web3.Accounts;
+using Nethereum.Hex.HexTypes;
 
 namespace api.Data
 {
@@ -39,7 +41,7 @@ namespace api.Data
 
             return await _context.Games
                 .Where(x => x.ChallengerId == userId || x.OpponentId == userId)
-                .OrderByDescending(x=> x.DateCreated)
+                .OrderByDescending(x => x.DateCreated)
                 .Select(x => new GameOverviewModel
                 {
                     OpponentName = x.Challenger.Id == userId ? x.Opponent.Nickname : x.Challenger.Nickname,
@@ -99,8 +101,9 @@ namespace api.Data
             }
 
             var web3 = new Web3(_account.Value.Address);
-            var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, 
-                game.Challenger.Address, game.Opponent.Address, game.ChallengerHand, game.OpponentHand);
+            web3.TransactionManager = new AccountSignerTransactionManager(web3.Client, _account.Value.MasterAccountPrivateKey);
+            var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, new HexBigInteger(900000),
+                game.Challenger.Address, game.Opponent.Address, HexByteConvertorExtensions.HexToByteArray(game.ChallengerHand), HexByteConvertorExtensions.HexToByteArray(game.OpponentHand));
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(deployedContractResult);
             while (receipt == null)
             {
@@ -110,6 +113,8 @@ namespace api.Data
             var contractAddress = receipt.ContractAddress;
             game.Address = contractAddress;
             await _context.SaveChangesAsync();
+
+
         }
     }
 
@@ -121,9 +126,9 @@ namespace api.Data
 
         public bool HandPlayed { get; set; }
 
-        public DateTime CreateDate {get;set;}
+        public DateTime CreateDate { get; set; }
         public bool GameInitiated { get; set; }
-        public long Id { get;  set; }
+        public long Id { get; set; }
     }
 
     public class ChallengeOpponentModel
@@ -132,7 +137,7 @@ namespace api.Data
         public string HashedHand { get; set; }
     }
 
-    public class RespondToChallengeModel 
+    public class RespondToChallengeModel
     {
         public string HashedHand { get; set; }
     }
