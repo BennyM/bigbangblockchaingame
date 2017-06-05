@@ -1,3 +1,5 @@
+import { StateService } from './../../services/state.service';
+import { ConfigService } from './../../services/config.service';
 import { Router } from '@angular/router';
 import { AuthenticatedHttp } from './../../services/authenticated-http';
 import { Component, OnInit } from '@angular/core';
@@ -9,14 +11,16 @@ import { Component, OnInit } from '@angular/core';
 export class PlayerListComponent implements OnInit {
     public players: Player[];
 
-    constructor(private http: AuthenticatedHttp, private router: Router) {
+    constructor(private http: AuthenticatedHttp, private router: Router, private configService: ConfigService, private stateService: StateService) {
     }
 
     ngOnInit(): void {
-        this.http.get('http://localhost:5000/api/players') // todo fix urls
+        this.stateService.startLoading();
+        this.http.get(`${this.configService.apiUrl}/api/players`)
             .toPromise()
             .then(resp => {
                 this.players = resp.json() as Player[];
+                this.stateService.doneLoading();
             });
     }
 

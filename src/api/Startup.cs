@@ -42,7 +42,7 @@ namespace api
             loggerFactory.AddDebug();
 
             app.UseCors(builder => 
-                builder.WithOrigins("http://localhost:5001") // todo fix urls
+                builder.WithOrigins(Configuration["Deployment:ui-origin"])
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials());

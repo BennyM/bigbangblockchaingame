@@ -1,5 +1,7 @@
 import { HandConfirmationService } from './hand-confirmation.service';
 import { GameDatabaseService, HandCorrelationData } from './game-database.service';
+import { StateService } from './state.service';
+import { ConfigService } from './config.service';
 import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
 import { Observable } from 'rxjs/Observable';
 import { AuthenticatedHttp } from './authenticated-http';
@@ -14,15 +16,14 @@ export class GamesService {
 
     public gamesOfUser: Observable<Game[]>;
 
-
-    constructor(private authenticatedHttp: AuthenticatedHttp, private database: GameDatabaseService, private confirmationService : HandConfirmationService) {
+    constructor(private authenticatedHttp: AuthenticatedHttp, private database: GameDatabaseService, private confirmationService : HandConfirmationService, private configService : ConfigService, private stateService : StateService) {
         this.gamesOfUser = this.getGamesOfUser();
     }
 
     private getGamesOfUser(): Observable<Game[]> {
         return Observable
             .timer(0, 2000)
-            .mergeMap(() => this.authenticatedHttp.get('http://localhost:5000/api/games')) // todo fix urls
+            .mergeMap(() => this.authenticatedHttp.get(`${this.configService.apiUrl}/api/games`))
             .map(resp => {
                 let games = resp.json() as Game[];
                 games.forEach(item => {
@@ -39,26 +40,34 @@ export class GamesService {
     }
 
     challengeOpponent(opponentId: string, hand: Hands): Promise<void> {
+        this.stateService.startLoading();
         var salt = randomstring.generate(7);
         var hashedHand = '0x' + abi.soliditySHA3(['uint8', 'string'], [hand, salt]).toString('hex');
 
         return this.authenticatedHttp
-            .post('http://localhost:5000/api/games', { opponentId: opponentId, hashedHand: hashedHand }) // todo fix urls
+            .post(`${this.configService.apiUrl}/api/games`, { opponentId: opponentId, hashedHand: hashedHand })
             .toPromise()
             .then(resp => {
-                return this.database.storeHand(new HandCorrelationData(hand, new Number(resp.text()), salt))
+                return this.database.storeHand(new HandCorrelationData(hand, parseInt(resp.text()), salt))
+            })
+            .then(() => {
+                this.stateService.doneLoading();
             });
     }
 
     respondToChallenge(gameId: number, hand: Hands): Promise<void> {
+        this.stateService.startLoading();
         var salt = randomstring.generate(7);
         var hashedHand = '0x' + abi.soliditySHA3(['uint8', 'string'], [hand, salt]).toString('hex');
 
         return this.authenticatedHttp
-            .post(`http://localhost:5000/api/games/${gameId}/hand`, { hashedHand: hashedHand }) // todo fix urls
+            .post(`${this.configService.apiUrl}/api/games/${gameId}/hand`, { hashedHand: hashedHand })
             .toPromise()
             .then(resp => {
                   return this.database.storeHand(new HandCorrelationData(hand, gameId, salt))
+            })
+            .then(() => {
+                this.stateService.doneLoading();
             });
     }
 }
