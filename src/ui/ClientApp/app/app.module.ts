@@ -1,3 +1,4 @@
+import { ConfigService } from './services/config.service';
 import { RespondChallengeComponent } from './components/game/respond-challenge.component';
 import { GameListComponent } from './components/game-list/game-list.component';
 import { ChallengePlayerComponent } from './components/game/challenge-player.component';
@@ -38,7 +39,8 @@ import { FormsModule } from "@angular/forms";
         WalletService, 
         Web3ProviderService, 
         { provide: AuthenticatedHttp, useFactory: resolveAuthenticatedHttp, deps: [UserService, Router, XHRBackend, RequestOptions] },
-        GamesService
+        GamesService,
+        ConfigService
     ],
     imports: [
         UniversalModule, // Must be first import. This automatically imports BrowserModule, HttpModule, and JsonpModule too.

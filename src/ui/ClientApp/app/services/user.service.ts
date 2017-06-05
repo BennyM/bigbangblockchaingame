@@ -1,3 +1,4 @@
+import { ConfigService } from './config.service';
 import { Router } from '@angular/router';
 import { AuthenticatedHttp, createAuthedOptions } from './authenticated-http';
 import { WalletService } from './wallet.service';
@@ -10,13 +11,16 @@ import 'rxjs/add/operator/toPromise';
 export class UserService {
     
     private localStorageKey = "currentuser";
-    private addUserUrl = 'http://localhost:5000/api/players'; // todo fix urls
-    private initAccountUrl = 'http://localhost:5000/api/accounts'; // todo fix urls
+    private addUserUrl;
+    private initAccountUrl;
     private requestOptions = new RequestOptions({headers: new Headers({'Content-Type': 'application/json'})});
 
     currentUser: User;
         
-    constructor(private http: Http, private walletService : WalletService, private router: Router) {
+    constructor(private http: Http, private walletService : WalletService, private router: Router, configService: ConfigService) {
+        this.addUserUrl = `${configService.apiUrl}/api/players`;
+        this.initAccountUrl = `${configService.apiUrl}/api/accounts`;
+
         if(typeof window !== 'undefined'){
             this.currentUser = JSON.parse(localStorage.getItem(this.localStorageKey));
             if(this.currentUser){

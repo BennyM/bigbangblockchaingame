@@ -1,3 +1,4 @@
+import { ConfigService } from './config.service';
 import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
 import { Observable } from 'rxjs/Observable';
 import { AuthenticatedHttp } from './authenticated-http';
@@ -13,7 +14,7 @@ export class GamesService {
     public gamesOfUser: Observable<Game[]>;
     private db: AngularIndexedDB;
 
-    constructor(private authenticatedHttp: AuthenticatedHttp) {
+    constructor(private authenticatedHttp: AuthenticatedHttp, private configService: ConfigService) {
         this.gamesOfUser = this.getGamesOfUser();
         this.db = new AngularIndexedDB('bbbgdb', 1);
         this.db.createStore(1, (evt) => {
@@ -26,7 +27,7 @@ export class GamesService {
     private getGamesOfUser(): Observable<Game[]> {
         return Observable
             .timer(0, 2000)
-            .mergeMap(() => this.authenticatedHttp.get('http://localhost:5000/api/games')) // todo fix urls
+            .mergeMap(() => this.authenticatedHttp.get(`${this.configService.apiUrl}/api/games`))
             .map(resp => {
                 let games = resp.json() as Game[];
                 games.forEach(item => {
@@ -44,7 +45,7 @@ export class GamesService {
         var hashedHand = '0x' + abi.soliditySHA3(['uint8', 'string'], [hand, salt]).toString('hex');
 
         return this.authenticatedHttp
-            .post('http://localhost:5000/api/games', { opponentId: opponentId, hashedHand: hashedHand }) // todo fix urls
+            .post(`${this.configService.apiUrl}/api/games`, { opponentId: opponentId, hashedHand: hashedHand })
             .toPromise()
             .then(resp => {
                 return this.db.add('games', { salt: salt, hand: hand, id: new Number(resp.text()) })
@@ -56,7 +57,7 @@ export class GamesService {
         var hashedHand = '0x' + abi.soliditySHA3(['uint8', 'string'], [hand, salt]).toString('hex');
 
         return this.authenticatedHttp
-            .post(`http://localhost:5000/api/games/${gameId}/hand`, { hashedHand: hashedHand }) // todo fix urls
+            .post(`${this.configService.apiUrl}/api/games/${gameId}/hand`, { hashedHand: hashedHand })
             .toPromise()
             .then(resp => {
                 return this.db.add('games', { salt: salt, hand: hand, id: gameId })
