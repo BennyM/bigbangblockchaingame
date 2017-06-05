@@ -1,11 +1,8 @@
-<<<<<<< HEAD
 import { HandConfirmationService } from './services/hand-confirmation.service';
 import { GameDatabaseService } from './services/game-database.service';
-=======
 import { StateService } from './services/state.service';
 import { LoadingComponent } from './components/app/loading.component';
 import { ConfigService } from './services/config.service';
->>>>>>> a9bf3e353b918d54f05cf14b78d4d0327443a83e
 import { RespondChallengeComponent } from './components/game/respond-challenge.component';
 import { GameListComponent } from './components/game-list/game-list.component';
 import { ChallengePlayerComponent } from './components/game/challenge-player.component';
@@ -48,13 +45,10 @@ import { FormsModule } from "@angular/forms";
         Web3ProviderService, 
         { provide: AuthenticatedHttp, useFactory: resolveAuthenticatedHttp, deps: [UserService, Router, XHRBackend, RequestOptions] },
         GamesService,
-<<<<<<< HEAD
         GameDatabaseService,
-        HandConfirmationService
-=======
+        HandConfirmationService,
         ConfigService,
         StateService
->>>>>>> a9bf3e353b918d54f05cf14b78d4d0327443a83e
     ],
     imports: [
         UniversalModule, // Must be first import. This automatically imports BrowserModule, HttpModule, and JsonpModule too.
