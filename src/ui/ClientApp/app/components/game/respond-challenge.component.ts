@@ -17,7 +17,7 @@ export class RespondChallengeComponent implements OnInit {
 
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
-            this.gameId = params['gameid'];
+            this.gameId = parseInt(params['gameid']);
             this.playerName = params['playername'];
         });
     }

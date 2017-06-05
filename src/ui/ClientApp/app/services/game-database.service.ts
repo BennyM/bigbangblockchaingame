@@ -17,11 +17,30 @@ export class GameDatabaseService{
     }
 
     storeHand(data : HandCorrelationData) : Promise<any>{
-        return this.db.add('games', data);
+        return this.db.getByKey('games',data.id)
+            .then((item : HandCorrelationData) =>{
+                if(item != null){
+                    item.hand = data.hand;
+                    item.salt = data.salt;
+                   return this.db.update('games', item);
+                } else{
+                    return this.db.add('games', data);
+                }
+            });
     }
 
     updateGameAddress(id : number, address : string) : Promise<any>{
-        return this.db.update('games', { id: id, address: address })
+        return this.db.getByKey('games',id)
+            .then((item : HandCorrelationData) =>{
+                if(item != null){
+                    item.address = address;
+                   return this.db.update('games', item);
+                } else{
+                    var data = new HandCorrelationData(Hands.none, id, null);
+                    data.address = address;
+                    return this.db.add('games', data);
+                }
+            });
     }
 
     findHand(address : string) : Promise<HandCorrelationData>{
@@ -31,7 +50,8 @@ export class GameDatabaseService{
 
 export class HandCorrelationData{
 
-    constructor(public hand : Hands, public id : Number, public salt : string){
+    public address : string;
+    constructor(public hand : Hands, public id : number, public salt : string){
 
     }
 }
