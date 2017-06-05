@@ -1,3 +1,4 @@
+import { StateService } from './state.service';
 import { ConfigService } from './config.service';
 import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
 import { Observable } from 'rxjs/Observable';
@@ -14,7 +15,7 @@ export class GamesService {
     public gamesOfUser: Observable<Game[]>;
     private db: AngularIndexedDB;
 
-    constructor(private authenticatedHttp: AuthenticatedHttp, private configService: ConfigService) {
+    constructor(private authenticatedHttp: AuthenticatedHttp, private configService: ConfigService, private stateService: StateService) {
         this.gamesOfUser = this.getGamesOfUser();
         this.db = new AngularIndexedDB('bbbgdb', 1);
         this.db.createStore(1, (evt) => {
@@ -41,6 +42,7 @@ export class GamesService {
     }
 
     challengeOpponent(opponentId: string, hand: Hands): Promise<void> {
+        this.stateService.startLoading();
         var salt = randomstring.generate(7);
         var hashedHand = '0x' + abi.soliditySHA3(['uint8', 'string'], [hand, salt]).toString('hex');
 
@@ -48,11 +50,15 @@ export class GamesService {
             .post(`${this.configService.apiUrl}/api/games`, { opponentId: opponentId, hashedHand: hashedHand })
             .toPromise()
             .then(resp => {
-                return this.db.add('games', { salt: salt, hand: hand, id: new Number(resp.text()) })
+                return this.db.add('games', { salt: salt, hand: hand, id: parseInt(resp.text()) })
+            })
+            .then(() => {
+                this.stateService.doneLoading();
             });
     }
 
     respondToChallenge(gameId: number, hand: Hands): Promise<void> {
+        this.stateService.startLoading();
         var salt = randomstring.generate(7);
         var hashedHand = '0x' + abi.soliditySHA3(['uint8', 'string'], [hand, salt]).toString('hex');
 
@@ -61,6 +67,9 @@ export class GamesService {
             .toPromise()
             .then(resp => {
                 return this.db.add('games', { salt: salt, hand: hand, id: gameId })
+            })
+            .then(() => {
+                this.stateService.doneLoading();
             });
     }
 }
