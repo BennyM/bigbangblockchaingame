@@ -1,3 +1,5 @@
+import { HandConfirmationService } from './hand-confirmation.service';
+import { GameDatabaseService, HandCorrelationData } from './game-database.service';
 import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
 import { Observable } from 'rxjs/Observable';
 import { AuthenticatedHttp } from './authenticated-http';
@@ -11,16 +13,10 @@ import { AngularIndexedDB } from 'angular2-indexeddb';
 export class GamesService {
 
     public gamesOfUser: Observable<Game[]>;
-    private db: AngularIndexedDB;
 
-    constructor(private authenticatedHttp: AuthenticatedHttp) {
+
+    constructor(private authenticatedHttp: AuthenticatedHttp, private database: GameDatabaseService, private confirmationService : HandConfirmationService) {
         this.gamesOfUser = this.getGamesOfUser();
-        this.db = new AngularIndexedDB('bbbgdb', 1);
-        this.db.createStore(1, (evt) => {
-            let objectStore = evt.currentTarget.result.createObjectStore(
-                'games', { keyPath: "id", autoIncrement: false });
-            objectStore.createIndex("address", "address", { unique: false });
-        });
     }
 
     private getGamesOfUser(): Observable<Game[]> {
@@ -30,7 +26,10 @@ export class GamesService {
             .map(resp => {
                 let games = resp.json() as Game[];
                 games.forEach(item => {
-                    this.db.update('games', { id: item.id, address: item.address }).then(() => {
+                    this.database.updateGameAddress(item.id, item.address).then(() => {
+                        if(item.address){
+                            this.confirmationService.watchGame(item.address);
+                        };
                     }, (error) => {
                         console.log(error);
                     });
@@ -47,7 +46,7 @@ export class GamesService {
             .post('http://localhost:5000/api/games', { opponentId: opponentId, hashedHand: hashedHand }) // todo fix urls
             .toPromise()
             .then(resp => {
-                return this.db.add('games', { salt: salt, hand: hand, id: new Number(resp.text()) })
+                return this.database.storeHand(new HandCorrelationData(hand, new Number(resp.text()), salt))
             });
     }
 
@@ -59,7 +58,7 @@ export class GamesService {
             .post(`http://localhost:5000/api/games/${gameId}/hand`, { hashedHand: hashedHand }) // todo fix urls
             .toPromise()
             .then(resp => {
-                return this.db.add('games', { salt: salt, hand: hand, id: gameId })
+                  return this.database.storeHand(new HandCorrelationData(hand, gameId, salt))
             });
     }
 }

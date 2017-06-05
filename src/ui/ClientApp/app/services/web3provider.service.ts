@@ -4,31 +4,39 @@ import * as RpcSource from 'web3-provider-engine/subproviders/rpc';
 import * as HookedWalletSubprovider from 'web3-provider-engine/subproviders/hooked-wallet';
 import * as Web3ProviderEngine from 'web3-provider-engine';
 import * as Web3 from 'web3';
+import * as FilterSubprovider from 'web3-provider-engine/subproviders/filters';
+import * as Web3Subprovider from 'web3-provider-engine/subproviders/web3';
 
 @Injectable()
 export class Web3ProviderService {
 
-    private web3: Web3;
+    private engine: Web3ProviderEngine;
 
-    getOrCreateWeb3Provider(WalletService: WalletService): Web3ProviderEngine {
-        if (!this.web3) {
-            let engine = new Web3ProviderEngine();
-            engine.addProvider(new RpcSource({
-                rpcUrl: 'http://bclkihf6w.westeurope.cloudapp.azure.com:8545'
-            }));
+    constructor(private wallet: WalletService){
+
+    }
+
+    getOrCreateWeb3Provider(): Web3ProviderEngine {
+        if (!this.engine) {
+            this.engine = new Web3ProviderEngine();
+            // engine.addProvider(new RpcSource({
+            //     rpcUrl: 'http://bclkihf6w.westeurope.cloudapp.azure.com:8545'
+            // }));
             var opts = {
                 getAccounts: () => {
-                    return WalletService.getWallet().getAddresses();
+                    return this.wallet.getWallet().getAddresses();
                 },
                 signTransaction: (tx) => {
-                    WalletService.getWallet().signTransaction(tx);
+                    this.wallet.getWallet().signTransaction(tx);
                 }
             };
             var hookedWalletProvider = new HookedWalletSubprovider(opts);
-            engine.addProvider(hookedWalletProvider)
-            this.web3 = new Web3(engine);
-            engine.start();
+            this.engine.addProvider(hookedWalletProvider);
+            this.engine.addProvider(new Web3Subprovider(new Web3.providers.HttpProvider('http://bclkihf6w.westeurope.cloudapp.azure.com:8545')));
+            // engine.addProvider(new FilterSubprovider());
+           
+            this.engine.start();
         }
-        return this.web3;
+        return this.engine;
     }
 }
