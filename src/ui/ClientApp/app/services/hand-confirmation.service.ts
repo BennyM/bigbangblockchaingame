@@ -1,5 +1,6 @@
+import { Game } from './games.service';
 import { Injectable } from '@angular/core';
-import { GameDatabaseService, HandCorrelationData } from './game-database.service';
+import { GameDatabaseService } from './game-database.service';
 import { WalletService } from './wallet.service';
 import { Web3ProviderService } from './web3provider.service';
 import * as contract from 'truffle-contract';
@@ -20,33 +21,34 @@ export class HandConfirmationService {
         this.BlindGame.setProvider(web3Provider.getOrCreateWeb3Provider());
     }
 
-    public watchGame(address: string) {
-        let index = this.watchedGameAddresses.indexOf(address);
-        if (index === -1) {
-            let data : GameData;
-                let game = this.BlindGame.at(address);
-                this.watchedGameAddresses.push(address);
+    public watchGame(gameInfo: Game) {
+        if (gameInfo.address) {
+            let index = this.watchedGameAddresses.indexOf(gameInfo.address);
+            if (index === -1) {
+                let data: GameData;
+                let game = this.BlindGame.at(gameInfo.address);
+                this.watchedGameAddresses.push(gameInfo.address);
                 let revealHand = game.StartReveal();
                 let drawEvent = game.Draw();
                 let gameEnd = game.GameEnd();
                 this.watchedGames.push({
-                    address: address,
+                    address: gameInfo.address,
                     game: game,
                     revealHandEvent: revealHand,
                     drawEvent: drawEvent,
                     gameEndEvent: gameEnd
                 });
                 this.watchedGames.push({
-                    game : game,
-                    address : address,
-                    revealHandEvent : revealHand,
-                    drawEvent : drawEvent,
-                    gameEndEvent : gameEnd
+                    game: game,
+                    address: gameInfo.address,
+                    revealHandEvent: revealHand,
+                    drawEvent: drawEvent,
+                    gameEndEvent: gameEnd
                 });
                 revealHand.watch((error, result) => {
                     if (error == null) {
                         console.log(result.args);
-                        this.database.findHand(address).then(playedHand => {
+                        this.database.findHand(gameInfo.address).then(playedHand => {
                             game.revealHand(playedHand.hand, playedHand.salt).catch(ex => console.log(ex));
                         });
                     } else {
@@ -61,9 +63,11 @@ export class HandConfirmationService {
                         console.log(error);
                     }
                 });
-      
 
+
+            }
         }
+
     }
 
 }

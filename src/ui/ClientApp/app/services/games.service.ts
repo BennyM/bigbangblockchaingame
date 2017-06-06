@@ -1,5 +1,5 @@
 import { HandConfirmationService } from './hand-confirmation.service';
-import { GameDatabaseService, HandCorrelationData } from './game-database.service';
+import { GameDatabaseService, GameHand } from './game-database.service';
 import { StateService } from './state.service';
 import { ConfigService } from './config.service';
 import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
@@ -27,13 +27,7 @@ export class GamesService {
             .map(resp => {
                 let games = resp.json() as Game[];
                 games.forEach(item => {
-                    this.database.updateGameAddress(item.id, item.address).then(() => {
-                        if(item.address){
-                            this.confirmationService.watchGame(item.address);
-                        };
-                    }, (error) => {
-                        console.log(error);
-                    });
+                    this.confirmationService.watchGame(item);
                 });
                 return games
             });
@@ -48,7 +42,8 @@ export class GamesService {
             .post(`${this.configService.apiUrl}/api/games`, { opponentId: opponentId, hashedHand: hashedHand })
             .toPromise()
             .then(resp => {
-                return this.database.storeHand(new HandCorrelationData(hand, parseInt(resp.text()), salt))
+                let gameHand = new GameHand(0,hand,salt);
+                return this.database.storeHand(gameHand, parseInt(resp.text()));
             })
             .then(() => {
                 this.stateService.doneLoading();
@@ -64,7 +59,8 @@ export class GamesService {
             .post(`${this.configService.apiUrl}/api/games/${gameId}/hand`, { hashedHand: hashedHand })
             .toPromise()
             .then(resp => {
-                  return this.database.storeHand(new HandCorrelationData(hand, gameId, salt))
+                let gameHand = new GameHand(0,hand,salt);
+                return this.database.storeHand(gameHand, gameId);
             })
             .then(() => {
                 this.stateService.doneLoading();

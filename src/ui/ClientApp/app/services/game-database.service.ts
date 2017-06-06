@@ -16,14 +16,15 @@ export class GameDatabaseService{
         });
     }
 
-    storeHand(data : HandCorrelationData) : Promise<any>{
-        return this.db.getByKey('games',data.id)
-            .then((item : HandCorrelationData) =>{
+    storeHand(data : GameHand, gameId : number) : Promise<any>{
+        return this.db.getByKey('games',gameId)
+            .then((item : GameData) =>{
                 if(item != null){
-                    item.hand = data.hand;
-                    item.salt = data.salt;
+                    item.hands.push(data);
                    return this.db.update('games', item);
                 } else{
+                    let game = new GameData(gameId);
+                    game.hands.push(data);
                     return this.db.add('games', data);
                 }
             });
@@ -31,27 +32,40 @@ export class GameDatabaseService{
 
     updateGameAddress(id : number, address : string) : Promise<any>{
         return this.db.getByKey('games',id)
-            .then((item : HandCorrelationData) =>{
-                if(item != null){
+            .then((item : GameData) =>{
+                if(item != null && item.address != address){
                     item.address = address;
                    return this.db.update('games', item);
                 } else{
-                    var data = new HandCorrelationData(Hands.none, id, null);
+                    var data = new GameData(id);
                     data.address = address;
                     return this.db.add('games', data);
                 }
             });
     }
 
-    findHand(address : string) : Promise<HandCorrelationData>{
-        return this.db.getByIndex('games', 'address', address);
+    findHand(address : string) : Promise<GameHand>{
+        return this.db.getByIndex('games', 'address', address)
+            .then((game : GameData) =>  game.hands[game.hands.length - 1]);
     }
 }
 
-export class HandCorrelationData{
+export class GameData{
 
     public address : string;
-    constructor(public hand : Hands, public id : number, public salt : string){
+    public hands : GameHand[];
 
+    constructor(public id : number){
+        this.hands = [];
+    }
+    
+  
+}
+
+export class GameHand{
+
+
+    constructor(public round : number, public hand : Hands, public salt : string, public revealed : boolean = false){
+       
     }
 }

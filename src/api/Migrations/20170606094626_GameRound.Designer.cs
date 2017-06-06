@@ -8,9 +8,10 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(BbbgContext))]
-    partial class BbbgContextModelSnapshot : ModelSnapshot
+    [Migration("20170606094626_GameRound")]
+    partial class GameRound
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
@@ -24,8 +25,6 @@ namespace api.Migrations
                     b.Property<string>("Address");
 
                     b.Property<Guid>("ChallengerId");
-
-                    b.Property<string>("CreatedTransactionHash");
 
                     b.Property<DateTime>("DateCreated");
 

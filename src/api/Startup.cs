@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using api.Util;
+using Hangfire;
+using api.Jobs;
 
 namespace api
 {
@@ -33,6 +35,9 @@ namespace api
             services.AddMvc();
             services.Configure<EthereumSettings>(Configuration.GetSection("Ethereum"));
 
+             services.AddHangfire(config => config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
+    
+            services.AddTransient<CreateGameAddressJob>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,6 +54,9 @@ namespace api
             app.UseLousySecurity();
 
             app.UseMvc();
+
+            app.UseHangfireDashboard();
+            app.UseHangfireServer();
         }
     }
 }
