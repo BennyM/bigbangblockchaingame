@@ -35,7 +35,9 @@ export class HandConfirmationService {
                 this.database.updateGameAddress(gameInfo.id, gameInfo.address)
                 .then(() => this.database.findHand(gameInfo.address))
                 .then( (hand) => {
-                    game.revealHand(hand.hand, hand.salt, {from : this.walletService.getWallet().getAddresses()[0] }).catch(ex => console.log(ex));}
+                    game.revealHand(hand.hand, hand.salt, {from: this.walletService.getWallet().getAddresses()[0]})
+                        .then(() => console.log('did it'))
+                        .catch(ex => console.log(ex));}
                 );
     
             }

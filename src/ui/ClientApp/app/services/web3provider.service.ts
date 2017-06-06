@@ -19,21 +19,28 @@ export class Web3ProviderService {
     getOrCreateWeb3Provider(): Web3ProviderEngine {
         if (!this.engine) {
             this.engine = new Web3ProviderEngine();
-            // engine.addProvider(new RpcSource({
+            // this.engine.addProvider(new RpcSource({
             //     rpcUrl: 'http://bclkihf6w.westeurope.cloudapp.azure.com:8545'
             // }));
             var opts = {
-                getAccounts: () => {
-                    return this.wallet.getWallet().getAddresses();
+                getAccounts: (cb) => {
+                    let addresses = this.wallet.getWallet().getAddresses();
+                    let prefixedAddresses =addresses.map(add => {
+                        return '0x' + add;
+                    });
+                    cb(null, prefixedAddresses);
                 },
-                signTransaction: (tx) => {
-                    this.wallet.getWallet().signTransaction(tx);
+                signTransaction: (tx, cb) => {
+                    let signedTransactionCallback = (error, result) =>{
+                        cb(null, result);
+                    };
+                    this.wallet.getWallet().signTransaction(tx, signedTransactionCallback);
                 }
             };
             var hookedWalletProvider = new HookedWalletSubprovider(opts);
             this.engine.addProvider(hookedWalletProvider);
-            this.engine.addProvider(new Web3Subprovider(new Web3.providers.HttpProvider('http://bclkihf6w.westeurope.cloudapp.azure.com:8545')));
-            // engine.addProvider(new FilterSubprovider());
+           this.engine.addProvider(new Web3Subprovider(new Web3.providers.HttpProvider('http://bclkihf6w.westeurope.cloudapp.azure.com:8545')));
+            // this. engine.addProvider(new FilterSubprovider());
            
             this.engine.start();
         }
