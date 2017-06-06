@@ -25,7 +25,7 @@ export class GameDatabaseService{
                 } else{
                     let game = new GameData(gameId);
                     game.hands.push(data);
-                    return this.db.add('games', data);
+                    return this.db.add('games', game);
                 }
             });
     }
