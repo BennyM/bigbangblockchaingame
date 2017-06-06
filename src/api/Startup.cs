@@ -55,12 +55,11 @@ namespace api
 
             app.UseMvc();
 
-<<<<<<< HEAD
             app.UseHangfireDashboard();
             app.UseHangfireServer();
-=======
+
             app.ApplicationServices.GetService<BbbgContext>().Database.Migrate();
->>>>>>> c4c418bc05a1dca93fa9a1781c93c16c857c05b0
+
         }
     }
 }
