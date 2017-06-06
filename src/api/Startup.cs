@@ -49,6 +49,8 @@ namespace api
             app.UseLousySecurity();
 
             app.UseMvc();
+
+            app.ApplicationServices.GetService<BbbgContext>().Database.Migrate();
         }
     }
 }
