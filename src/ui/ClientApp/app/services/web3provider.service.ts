@@ -43,6 +43,9 @@ export class Web3ProviderService {
             // this. engine.addProvider(new FilterSubprovider());
            
             this.engine.start();
+            var web3 = new Web3(this.engine);
+           web3.eth.getBalance('0x' + this.wallet.getWallet().getAddresses()[0], (error, result) => console.log("balance: " + result));
+            
         }
         return this.engine;
     }
