@@ -36,7 +36,7 @@ export class GameDatabaseService{
                 if(item != null && item.address != address){
                     item.address = address;
                    return this.db.update('games', item);
-                } else{
+                } else if (item == null){
                     var data = new GameData(id);
                     data.address = address;
                     return this.db.add('games', data);

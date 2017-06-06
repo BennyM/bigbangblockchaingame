@@ -13,7 +13,7 @@ export class HandConfirmationService {
     private watchedGameAddresses: string[];
     private BlindGame: any;
 
-    constructor(private web3Provider: Web3ProviderService, private database: GameDatabaseService) {
+    constructor(private web3Provider: Web3ProviderService, private database: GameDatabaseService, private walletService : WalletService) {
         this.watchedGames = [];
         this.watchedGameAddresses = [];
         let artifact = blindgame_artifacts;
@@ -27,45 +27,19 @@ export class HandConfirmationService {
             if (index === -1) {
                 let data: GameData;
                 let game = this.BlindGame.at(gameInfo.address);
+                this.watchedGames.push({
+                    address: gameInfo.address,
+                    game: game
+                });
                 this.watchedGameAddresses.push(gameInfo.address);
-                let revealHand = game.StartReveal();
-                let drawEvent = game.Draw();
-                let gameEnd = game.GameEnd();
-                this.watchedGames.push({
-                    address: gameInfo.address,
-                    game: game,
-                    revealHandEvent: revealHand,
-                    drawEvent: drawEvent,
-                    gameEndEvent: gameEnd
-                });
-                this.watchedGames.push({
-                    game: game,
-                    address: gameInfo.address,
-                    revealHandEvent: revealHand,
-                    drawEvent: drawEvent,
-                    gameEndEvent: gameEnd
-                });
-                revealHand.watch((error, result) => {
-                    if (error == null) {
-                        console.log(result.args);
-                        this.database.findHand(gameInfo.address).then(playedHand => {
-                            game.revealHand(playedHand.hand, playedHand.salt).catch(ex => console.log(ex));
-                        });
-                    } else {
-                        console.log(error);
-                    }
-                });
-                gameEnd.watch((error, result) => {
-                    if (error == null) {
-                        console.log('winner');
-                        console.log(result.args);
-                    } else {
-                        console.log(error);
-                    }
-                });
-
-
+                this.database.updateGameAddress(gameInfo.id, gameInfo.address)
+                .then(() => this.database.findHand(gameInfo.address))
+                .then( (hand) => {
+                    game.revealHand(hand.hand, hand.salt, {from : this.walletService.getWallet().getAddresses()[0] }).catch(ex => console.log(ex));}
+                );
+    
             }
+        
         }
 
     }
@@ -75,8 +49,6 @@ export class HandConfirmationService {
 class GameData {
     address: string;
     game: any;
-    revealHandEvent: any;
-    drawEvent: any;
-    gameEndEvent: any;
+   
 
 }
