@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using api.Util;
 using Hangfire;
 using api.Jobs;
+using Nethereum.Web3;
 
 namespace api
 {
@@ -29,7 +30,7 @@ namespace api
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddDbContext<BbbgContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<BbbgContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
             services.AddCors();
             services.AddMvc();
@@ -38,6 +39,8 @@ namespace api
              services.AddHangfire(config => config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
     
             services.AddTransient<CreateGameAddressJob>();
+            services.AddTransient<PollForDrawJob>();
+            services.AddTransient<WinnerPollJob>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

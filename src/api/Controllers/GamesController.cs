@@ -19,6 +19,7 @@ using Nethereum.Web3.Accounts;
 using Nethereum.Hex.HexTypes;
 using Hangfire;
 using api.Jobs;
+using Nethereum.ABI.Encoders;
 
 namespace api.Data
 {
@@ -111,9 +112,8 @@ namespace api.Data
                 }
             }
 
-            var web3 = new Web3(_account.Value.Address);
-            web3.TransactionManager = new AccountSignerTransactionManager(web3.Client, _account.Value.MasterAccountPrivateKey);
-            var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, new HexBigInteger(900000),
+            var web3 = new Web3(new Account(_account.Value.MasterAccountPrivateKey), _account.Value.Address);
+            var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, new HexBigInteger(1000000),
                 game.Challenger.Address, game.Opponent.Address, HexByteConvertorExtensions.HexToByteArray(game.Rounds.Last().HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(game.Rounds.Last().HashedHandOpponent));
             game.CreatedTransactionHash = deployedContractResult;
             _context.SaveChanges();

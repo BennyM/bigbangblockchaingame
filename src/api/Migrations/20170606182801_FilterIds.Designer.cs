@@ -8,9 +8,10 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(BbbgContext))]
-    partial class BbbgContextModelSnapshot : ModelSnapshot
+    [Migration("20170606182801_FilterIds")]
+    partial class FilterIds
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
@@ -31,15 +32,13 @@ namespace api.Migrations
 
                     b.Property<string>("DrawEventFilterId");
 
-                    b.Property<int>("LosingHand");
-
                     b.Property<Guid>("OpponentId");
+
+                    b.Property<bool>("Verified");
 
                     b.Property<string>("WinnerEventFilterId");
 
                     b.Property<Guid?>("WinnerId");
-
-                    b.Property<int>("WinningHand");
 
                     b.HasKey("Id");
 
@@ -62,10 +61,6 @@ namespace api.Migrations
                     b.Property<string>("HashedHandChallenger");
 
                     b.Property<string>("HashedHandOpponent");
-
-                    b.Property<int>("Outcome");
-
-                    b.Property<long>("RoundNumber");
 
                     b.HasKey("Id");
 

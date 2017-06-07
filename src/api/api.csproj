@@ -15,8 +15,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="1.1.2" />
     <PackageReference Include="microsoft.entityframeworkcore.sqlserver" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
-    <PackageReference Include="Nethereum.Hex" Version="2.0.0-rc3" />
-    <PackageReference Include="Nethereum.Web3" Version="2.0.0-rc3" />
+    <PackageReference Include="Nethereum.Hex" Version="2.0.0-rc4" />
+    <PackageReference Include="Nethereum.Web3" Version="2.0.0-rc4" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.0">

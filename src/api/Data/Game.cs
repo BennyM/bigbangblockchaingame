@@ -15,7 +15,6 @@ namespace api.Data
         public Guid ChallengerId { get; set; }
         public Player Opponent { get; set; }
         public Guid OpponentId { get; set; }
-        public bool Verified { get; set; }
         public Player Winner { get; set; }
         public Guid? WinnerId { get; set; }
         public string Address { get; set; }
@@ -25,6 +24,11 @@ namespace api.Data
         public ICollection<GameRound> Rounds { get; set; }
 
         public string CreatedTransactionHash {get;set;}
+        public string DrawEventFilterId { get;  set; }
+        public string WinnerEventFilterId { get;  set; }
+
+        public Hands WinningHand{get;set;}
+        public Hands LosingHand {get;set;}
     }
 
     public class GameRound
@@ -35,5 +39,17 @@ namespace api.Data
 
         public Game Game { get; set; }
         public long GameId { get; set; }
+
+        public long RoundNumber {get;set;}
+        public RoundOutcome Outcome {get;set;}
+
+    
+    }
+
+    public enum RoundOutcome
+    {
+        None,
+        Draw,
+        Winner
     }
 }

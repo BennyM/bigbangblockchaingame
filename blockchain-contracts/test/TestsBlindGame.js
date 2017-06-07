@@ -24,15 +24,8 @@ contract('BlindGame', function(accounts) {
         game = createdGame;
         assert.isOk(game);
         console.log("asserted game")
-        return game.hash.call(1, "salt1");
+         return game.revealHand(1, 'salt1', {from: account0});
       })
-      .then(function(tx){
-        console.log('sol hash');
-        assert.equal(hash0, tx);
-        console.log(tx);
-        return game.revealHand(1, 'salt1', {from: account0});
-      })
-      
       .then(function(tx){
         console.log('revealed hand');
         assert.isOk(tx.receipt);

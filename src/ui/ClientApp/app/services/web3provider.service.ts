@@ -19,9 +19,6 @@ export class Web3ProviderService {
     getOrCreateWeb3Provider(): Web3ProviderEngine {
         if (!this.engine) {
             this.engine = new Web3ProviderEngine();
-            // this.engine.addProvider(new RpcSource({
-            //     rpcUrl: 'http://bclkihf6w.westeurope.cloudapp.azure.com:8545'
-            // }));
             var opts = {
                 getAccounts: (cb) => {
                     let addresses = this.wallet.getWallet().getAddresses();
@@ -40,7 +37,6 @@ export class Web3ProviderService {
             var hookedWalletProvider = new HookedWalletSubprovider(opts);
             this.engine.addProvider(hookedWalletProvider);
            this.engine.addProvider(new Web3Subprovider(new Web3.providers.HttpProvider('http://bclkihf6w.westeurope.cloudapp.azure.com:8545')));
-            // this. engine.addProvider(new FilterSubprovider());
            
             this.engine.start();
             var web3 = new Web3(this.engine);
