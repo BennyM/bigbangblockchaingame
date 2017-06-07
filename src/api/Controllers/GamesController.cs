@@ -41,25 +41,31 @@ namespace api.Data
         public async Task<IEnumerable<GameOverviewModel>> GamesOfUser()
         {
             var userId = new Guid(User.Claims.Single(cl => cl.Type == ClaimTypes.NameIdentifier).Value);
-
-            var data = await _context.Games
+            List<GameOverviewModel> models = new List<GameOverviewModel>();
+            var games = await _context.Games
+                .AsNoTracking()
                 .Include(x => x.Opponent)
                 .Include(x => x.Challenger)
                 .Include(x => x.Rounds)
                 .Where(x => x.ChallengerId == userId || x.OpponentId == userId)
                 .OrderByDescending(x => x.DateCreated)
                 .ToListAsync();
-            return data.Select(x => new GameOverviewModel
+            foreach (var game in games)
             {
-                OpponentName = x.Challenger.Id == userId ? x.Opponent.Nickname : x.Challenger.Nickname,
-                Address = x.Address,
-                Id = x.Id,
-                HandPlayed = x.ChallengerId == userId || (x.OpponentId == userId && x.Rounds.Last().HashedHandOpponent != null),
-                CreateDate = x.DateCreated,
-                GameInitiated = x.Challenger.Id == userId,
-                CurrentRound = 0
-            })
-             .ToList();
+                var lastRound = game.Rounds.OrderBy(x => x.RoundNumber).Last();
+                models.Add(
+                new GameOverviewModel
+                {
+                    OpponentName = game.Challenger.Id == userId ? game.Opponent.Nickname : game.Challenger.Nickname,
+                    Address = game.Address,
+                    Id = game.Id,
+                    HandPlayed = game.ChallengerId == userId ? lastRound.HashedHandChallenger != null : lastRound.HashedHandOpponent != null,
+                    CreateDate = game.DateCreated,
+                    GameInitiated = game.Challenger.Id == userId,
+                    CurrentRound = lastRound.RoundNumber
+                });
+            }
+            return models;
         }
 
         [HttpPost]
@@ -76,7 +82,9 @@ namespace api.Data
             };
             g.Rounds.Add(new GameRound
             {
-                HashedHandChallenger = model.HashedHand
+                HashedHandChallenger = model.HashedHand,
+                RoundNumber = 0
+
             });
             _context.Games.Add(g);
             await _context.SaveChangesAsync();
@@ -95,7 +103,17 @@ namespace api.Data
                 .Include(x => x.Challenger)
                 .Include(x => x.Opponent)
                 .SingleAsync(x => x.Id == id);
-            game.Rounds.Last().HashedHandOpponent = model.HashedHand;
+            var currentRound = game.Rounds.OrderBy(x => x.RoundNumber).Last();
+
+            if (playerId == game.Challenger.Id)
+            {
+                currentRound.HashedHandChallenger = model.HashedHand;
+            }
+            else
+            {
+                currentRound.HashedHandOpponent = model.HashedHand;
+            }
+
             await _context.SaveChangesAsync();
 
             var assembly = typeof(GamesController).GetTypeInfo().Assembly;
@@ -113,17 +131,27 @@ namespace api.Data
             }
 
             var web3 = new Web3(new Account(_account.Value.MasterAccountPrivateKey), _account.Value.Address);
-            var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, new HexBigInteger(1000000),
-                game.Challenger.Address, game.Opponent.Address, HexByteConvertorExtensions.HexToByteArray(game.Rounds.Last().HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(game.Rounds.Last().HashedHandOpponent));
-            game.CreatedTransactionHash = deployedContractResult;
-            _context.SaveChanges();
-            CreateGameAddressJob job = new CreateGameAddressJob(_context, _account);
-            long gameId = game.Id;
-            BackgroundJob.Schedule(() => job.PollForAddress(deployedContractResult, game.Id), TimeSpan.FromSeconds(5));
+            if (game.Address == null)
+            {
+                var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, new HexBigInteger(1000000),
+                    game.Challenger.Address, game.Opponent.Address, HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent));
+                game.CreatedTransactionHash = deployedContractResult;
+                _context.SaveChanges();
+                CreateGameAddressJob job = new CreateGameAddressJob(_context, _account);
+                long gameId = game.Id;
+                BackgroundJob.Schedule(() => job.PollForAddress(deployedContractResult, game.Id), TimeSpan.FromSeconds(5));
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                var contract = web3.Eth.GetContract(abi, game.Address);
+                var playHandsFunction = contract.GetFunction("playHands");
+                var trx = await playHandsFunction.SendTransactionAsync(_account.Value.MasterAccountAddress,new HexBigInteger(1000000),HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent));
+               PollForRevealHandJob revealHandJob = new PollForRevealHandJob(_context, _account);
+                BackgroundJob.Schedule(() => revealHandJob.PollForReveal(trx, game.Address,game.Id), TimeSpan.FromSeconds(5));
+                await _context.SaveChangesAsync();
+            }
 
-
-
-            await _context.SaveChangesAsync();
 
 
         }
@@ -141,7 +169,7 @@ namespace api.Data
         public bool GameInitiated { get; set; }
         public long Id { get; set; }
 
-        public int CurrentRound { get; set; }
+        public long CurrentRound { get; set; }
     }
 
     public class ChallengeOpponentModel

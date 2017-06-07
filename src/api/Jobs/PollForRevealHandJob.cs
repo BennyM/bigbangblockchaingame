@@ -17,18 +17,18 @@ using Microsoft.EntityFrameworkCore;
 namespace api.Jobs
 {
 
-    public class PollForDrawJob
+    public class PollForRevealHandJob
     {
         private BbbgContext _dbContext;
         private IOptions<EthereumSettings> _account;
 
 
-        public PollForDrawJob(BbbgContext dbContext, IOptions<EthereumSettings> account)
+        public PollForRevealHandJob(BbbgContext dbContext, IOptions<EthereumSettings> account)
         {
             _dbContext = dbContext;
             _account = account;
         }
-        public async Task PollForDraw(string filterId, string contractAddress, long gameId)
+        public async Task PollForReveal(string filterId, string contractAddress, long gameId)
         {
             var assembly = typeof(GamesController).GetTypeInfo().Assembly;
             string abi = null;
@@ -48,61 +48,39 @@ namespace api.Jobs
             var code = await web3.Eth.GetCode.SendRequestAsync(contractAddress);
             var contract = web3.Eth.GetContract(abi, contractAddress);
 
-            var drawEvent = contract.GetEvent("Draw");
+            var drawEvent = contract.GetEvent("StartReveal");
 
 
-            var changes = await drawEvent.GetFilterChanges<DrawEvent>(new HexBigInteger(filterId));
+            var changes = await drawEvent.GetFilterChanges<StartRevealEvent>(new HexBigInteger(filterId));
 
 
             if (changes.Any())
             {
                 var game = _dbContext.Games.Include(x => x.Rounds).Single(x => x.Id == gameId);
-                foreach (var drawEvents in changes.Select(x => x.Event).OrderBy(x => x.NewRound))
+                foreach (var drawRound in changes)
                 {
-                    var round = game.Rounds.Single(x => x.RoundNumber == drawEvents.NewRound - 1);
-                    round.Outcome = RoundOutcome.Draw;
-                    if (!game.Rounds.Any(x => x.RoundNumber == drawEvents.NewRound))
-                    {
-                        game.Rounds.Add(new GameRound() { RoundNumber = drawEvents.NewRound });
-                    }
+                    var round = game.Rounds.Single(x => x.RoundNumber == drawRound.Event.RoundNumber);
+                    round.Mined = true;
                 }
             }
             _dbContext.SaveChanges();
-
             var winnerFunc = contract.GetFunction("winner");
             var addr = await winnerFunc.CallAsync<string>();
             if (addr != "0x0000000000000000000000000000000000000000")
             {
-                BackgroundJob.Schedule(() => PollForDraw(filterId, contractAddress, gameId), TimeSpan.FromSeconds(5));
+
+                BackgroundJob.Schedule(() => PollForReveal(filterId, contractAddress, gameId), TimeSpan.FromSeconds(5));
             }
 
 
         }
     }
 
-    [FunctionOutput]
-    public class GetHandFromResult
+    public class StartRevealEvent
     {
-        [Parameter("bytes32", 1)]
-        public string State1 { get; set; }
-        [Parameter("uint8", 2)]
-        public int State2 { get; set; }
-
-        [Parameter("bytes32", 3)]
-        public string State3 { get; set; }
-
-        [Parameter("uint8", 4)]
-        public int State4 { get; set; }
+        [Parameter("uint256", "roundNumber", 1, false)]
+        public int RoundNumber { get; set; }
 
 
-    }
-
-    public class DrawEvent
-    {
-        [Parameter("uint8", "draw", 1, false)]
-        public int State { get; set; }
-
-        [Parameter("uint256", "newRoundNumber", 1, false)]
-        public long NewRound { get; set; }
     }
 }

@@ -66,7 +66,7 @@ namespace api.Jobs
                 game.WinningHand = (Hands)winEvent.WinningHand;
                 game.LosingHand = (Hands)winEvent.LosingHand;
                 Player winner = null;
-                if (game.Challenger.Address == winEvent.Winner)
+                if ("0x" + game.Challenger.Address == winEvent.Winner)
                 {
                     winner = game.Challenger;
                 }

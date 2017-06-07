@@ -23,12 +23,12 @@ namespace api.Data
 
         public ICollection<GameRound> Rounds { get; set; }
 
-        public string CreatedTransactionHash {get;set;}
-        public string DrawEventFilterId { get;  set; }
-        public string WinnerEventFilterId { get;  set; }
+        public string CreatedTransactionHash { get; set; }
+        public string DrawEventFilterId { get; set; }
+        public string WinnerEventFilterId { get; set; }
 
-        public Hands WinningHand{get;set;}
-        public Hands LosingHand {get;set;}
+        public Hands WinningHand { get; set; }
+        public Hands LosingHand { get; set; }
     }
 
     public class GameRound
@@ -40,10 +40,11 @@ namespace api.Data
         public Game Game { get; set; }
         public long GameId { get; set; }
 
-        public long RoundNumber {get;set;}
-        public RoundOutcome Outcome {get;set;}
+        public long RoundNumber { get; set; }
+        public RoundOutcome Outcome { get; set; }
+        public bool Mined { get; set; }
 
-    
+
     }
 
     public enum RoundOutcome

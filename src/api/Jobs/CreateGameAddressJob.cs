@@ -10,6 +10,7 @@ using System.Reflection;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Nethereum.Web3.Accounts;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Jobs
 {
@@ -31,9 +32,9 @@ namespace api.Jobs
             if (receipt != null)
             {
                 var contractAddress = receipt.ContractAddress;
-                var game = _dbContext.Games.Single(x => x.Id == gameId);
+                var game = _dbContext.Games.Include(x=> x.Rounds).Single(x => x.Id == gameId);
                 game.Address = receipt.ContractAddress;
-               
+               game.Rounds.Single().Mined = true;
                 var assembly = typeof(GamesController).GetTypeInfo().Assembly;
                 string abi = null;
                 string binary = null;

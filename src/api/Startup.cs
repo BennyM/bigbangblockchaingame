@@ -41,6 +41,7 @@ namespace api
             services.AddTransient<CreateGameAddressJob>();
             services.AddTransient<PollForDrawJob>();
             services.AddTransient<WinnerPollJob>();
+             services.AddTransient<PollForRevealHandJob>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
