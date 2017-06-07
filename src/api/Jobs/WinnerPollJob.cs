@@ -74,6 +74,7 @@ namespace api.Jobs
                 {
                     winner = game.Opponent;
                 }
+                game.Winner = winner;
 
                 _dbContext.SaveChanges();
             }

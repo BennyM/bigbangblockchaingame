@@ -47,6 +47,7 @@ namespace api.Data
                 .Include(x => x.Opponent)
                 .Include(x => x.Challenger)
                 .Include(x => x.Rounds)
+                .Include(x => x.Winner)
                 .Where(x => x.ChallengerId == userId || x.OpponentId == userId)
                 .OrderByDescending(x => x.DateCreated)
                 .ToListAsync();
@@ -62,7 +63,8 @@ namespace api.Data
                     HandPlayed = game.ChallengerId == userId ? lastRound.HashedHandChallenger != null : lastRound.HashedHandOpponent != null,
                     CreateDate = game.DateCreated,
                     GameInitiated = game.Challenger.Id == userId,
-                    CurrentRound = lastRound.RoundNumber
+                    CurrentRound = lastRound.RoundNumber,
+                    Winner = game.Winner != null ? game.Winner.Id == userId : (bool?)null
                 });
             }
             return models;
@@ -170,6 +172,7 @@ namespace api.Data
         public long Id { get; set; }
 
         public long CurrentRound { get; set; }
+        public bool? Winner { get; set; }
     }
 
     public class ChallengeOpponentModel

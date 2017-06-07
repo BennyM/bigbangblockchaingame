@@ -14,11 +14,22 @@
         <tr *ngFor="let game of games">
             <td>{{game.opponentName}}</td>
             <td>
-                <span *ngIf="!game.gameInitiated && !game.handPlayed">You were challenged! Respond in kind.</span>
-                <span *ngIf="game.gameInitiated">Wait for your opponent.</span>
+                <div *ngIf="game.winner == null && game.currentRound == 0">
+                    <span *ngIf="!game.handPlayed">You were challenged! Respond in kind.</span>
+                    <span *ngIf="game.handPlayed">Wait for your opponent...</span>
+                </div>
+                <div *ngIf="game.winner == null && game.currentRound > 0">
+                    <span>Draw! Round {{game.currentRound+1}}: </span>
+                    <span *ngIf="!game.handPlayed">Choose another hand.</span>
+                    <span *ngIf="game.handPlayed">Wait for your opponent...</span>
+                </div>
+                <div *ngIf="game.winner != null">
+                    <span *ngIf="game.winner">You won!</span>
+                    <span *ngIf="!game.winner">You lost.</span>
+                </div>
             </td>
             <td>
-                <button *ngIf="!game.gameInitiated && !game.handPlayed" (click)="onRespondClick(game)" class="btn btn-sm">Respond</button>
+                <button *ngIf="!game.handPlayed" (click)="onRespondClick(game)" class="btn btn-sm">Respond</button>
             </td>
         </tr>
     </tbody>

@@ -75,4 +75,6 @@ export class Game {
     handPlayed: boolean;
     createDate: Date;
     gameInitiated: boolean;
+    currentRound: number;
+    winner: boolean;
 }
