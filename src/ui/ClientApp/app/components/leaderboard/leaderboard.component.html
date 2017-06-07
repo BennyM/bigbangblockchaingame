@@ -1,0 +1,18 @@
+<h1>Leaderboard</h1>
+
+<table class='table' *ngIf="leaderboard">
+    <thead>
+        <tr>
+            <th>Player</th>
+            <th>Wins</th>
+            <th>Losses</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let row of leaderboard">
+            <td>{{ row.nickname }}</td>
+            <td>{{ row.wins }}</td>
+            <td>{{ row.losses }}</td>
+        </tr>
+    </tbody>
+</table>

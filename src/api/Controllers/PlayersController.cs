@@ -56,6 +56,25 @@ namespace api.Controllers
 
             return BadRequest();
         }
+
+        [HttpGet]
+        [Route("leaderboard")]
+        public async Task<IActionResult> Leaderboard() 
+        {
+            var players = await _context.Players
+                .Include(x => x.ChallengerGames)
+                .Include(x => x.OpponentGames)
+                .Where(x => x.ChallengerGames.Count() > 0 || x.OpponentGames.Count() > 0)
+                .Select(x => new LeaderboardRow
+                    {
+                        Nickname = x.Nickname, 
+                        Wins = x.ChallengerGames.Where(y => y.WinnerId == x.Id).Count() + x.OpponentGames.Where(y => y.WinnerId == x.Id).Count(),
+                        Losses = x.ChallengerGames.Where(y => y.WinnerId != null && y.WinnerId != x.Id).Count() + x.OpponentGames.Where(y => y.WinnerId != null && y.WinnerId != x.Id).Count()
+                    })
+                .ToListAsync();
+
+            return Ok(players.OrderByDescending(x => x.Wins).ThenBy(x => x.Losses));
+        }
     }
 
     public class AddPlayerRequest
@@ -64,5 +83,12 @@ namespace api.Controllers
         public string Email { get; set; }
         [Required]
         public string Nickname { get; set; }
+    }
+
+    public class LeaderboardRow 
+    {
+        public string Nickname { get; set; }
+        public int Wins { get; set; }
+        public int Losses { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { HandConfirmationService } from './services/hand-confirmation.service';
 import { GameDatabaseService } from './services/game-database.service';
 import { StateService } from './services/state.service';
@@ -36,7 +37,8 @@ import { FormsModule } from "@angular/forms";
         ChallengePlayerComponent,
         GameListComponent,
         RespondChallengeComponent,
-        LoadingComponent
+        LoadingComponent,
+        LeaderboardComponent
     ],
     providers: [
         UserService, 
@@ -56,6 +58,7 @@ import { FormsModule } from "@angular/forms";
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full'},
             { path: 'home', component: HomeComponent, canActivate: [AuthenticationCanActivateService]},
+            { path: 'leaderboard', component: LeaderboardComponent, canActivate: [AuthenticationCanActivateService]},
             { path: 'players', component: PlayerListComponent, canActivate: [AuthenticationCanActivateService]},
             { path: 'register', component: RegisterComponent},
             { path: 'challenge/:playerid/:playername', component: ChallengePlayerComponent, canActivate: [AuthenticationCanActivateService]},
