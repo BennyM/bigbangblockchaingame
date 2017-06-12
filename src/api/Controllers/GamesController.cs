@@ -144,7 +144,7 @@ namespace api.Data
                 BackgroundJob.Schedule(() => job.PollForAddress(deployedContractResult, game.Id), TimeSpan.FromSeconds(5));
                 await _context.SaveChangesAsync();
             }
-            else
+            else if (currentRound.HashedHandChallenger != null && currentRound.HashedHandOpponent != null)
             {
                 var contract = web3.Eth.GetContract(abi, game.Address);
                 var playHandsFunction = contract.GetFunction("playHands");

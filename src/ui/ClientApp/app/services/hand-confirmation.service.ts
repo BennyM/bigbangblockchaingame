@@ -27,27 +27,10 @@ export class HandConfirmationService {
             if (index === -1) {
                 let data: GameData;
                 let game = this.BlindGame.at(gameInfo.address);
-                game.player1.call().then(result => console.log(result)).catch(ex => console.log(ex));
-                 game.player2.call().then(result => console.log(result)).catch(ex => console.log(ex));  
-           game.getHandFrom.call(0).then(result => console.log(result)).catch(ex => console.log(ex));
-         //  game.hands.call(0).then(result => console.log(result)).catch(ex => console.log(ex));    
-                let drawEvent = game.Draw();
-                drawEvent.watch((error, result) => {
-                    if(error){
-                        console.log(error);
-                    }
-                    else if(result){
-                        console.log(result);
-                    }
-                    else
-                    {
-                        console.log("empty");
-                    }
-                });
+         
                 this.watchedGames.push({
                     address: gameInfo.address,
-                    game: game,
-                    evt : drawEvent
+                    game: game
                 });
                 this.watchedGameAddresses.push(gameInfo.address);
                 this.database.updateGameAddress(gameInfo.id, gameInfo.address)
@@ -69,7 +52,7 @@ export class HandConfirmationService {
 class GameData {
     address: string;
     game: any;
-    evt : any;
+    
    
 
 }
