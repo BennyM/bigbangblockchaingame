@@ -1,6 +1,6 @@
 import { Game } from './games.service';
 import { Injectable } from '@angular/core';
-import { GameDatabaseService, GameData, GameHand } from './game-database.service';
+import { GameDatabaseService, GameData, GameHand, GameDto } from './game-database.service';
 import { WalletService } from './wallet.service';
 import { Web3ProviderService } from './web3provider.service';
 import * as contract from 'truffle-contract';
@@ -23,12 +23,12 @@ export class HandConfirmationService {
 
     public watchGame(gameInfo: Game) {
         this.database.findGameById(gameInfo.id)
-            .then(game => {
-                if (!game) {
-                    game = new GameData(gameInfo.id);
+            .then(gameData => {
+                if (!gameData.game) {
+                    gameData = new GameData(new GameDto(gameInfo.id));
                 }
                 
-                let lastLocalRound = game.lastRound();
+                let lastLocalRound = gameData.lastRound();
 
                 if(lastLocalRound && 
                     gameInfo.currentRound == lastLocalRound.round && 
@@ -36,17 +36,17 @@ export class HandConfirmationService {
                     (!lastLocalRound.revealed && (new Date().getTime() - lastLocalRound.startedReveal.getTime() > 5 * 60 * 1000) )){
                         let contract = this.BlindGame.at(gameInfo.address);
                         lastLocalRound.startedReveal = new Date();
-                        this.database.storeGame(game)
+                        this.database.storeGame(gameData)
                             .then(() => contract.revealHand(lastLocalRound.hand, lastLocalRound.salt, {from: this.walletService.getWallet().getAddresses()[0]}))
                             .then( () => {
                                 lastLocalRound.revealed = true;
-                                return this.database.storeGame(game);
+                                return this.database.storeGame(gameData);
                             })
                             .catch(ex => console.log(ex));
                 }
                 else{
             
-                    this.database.storeGame(game);
+                    this.database.storeGame(gameData);
                 }
             });
 
