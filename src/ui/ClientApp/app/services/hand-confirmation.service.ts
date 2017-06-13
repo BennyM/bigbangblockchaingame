@@ -1,6 +1,6 @@
 import { Game } from './games.service';
 import { Injectable } from '@angular/core';
-import { GameDatabaseService } from './game-database.service';
+import { GameDatabaseService, GameData, GameHand } from './game-database.service';
 import { WalletService } from './wallet.service';
 import { Web3ProviderService } from './web3provider.service';
 import * as contract from 'truffle-contract';
@@ -13,7 +13,7 @@ export class HandConfirmationService {
     private watchedGameAddresses: string[];
     private BlindGame: any;
 
-    constructor(private web3Provider: Web3ProviderService, private database: GameDatabaseService, private walletService : WalletService) {
+    constructor(private web3Provider: Web3ProviderService, private database: GameDatabaseService, private walletService: WalletService) {
         this.watchedGames = [];
         this.watchedGameAddresses = [];
         let artifact = blindgame_artifacts;
@@ -22,37 +22,34 @@ export class HandConfirmationService {
     }
 
     public watchGame(gameInfo: Game) {
-        if (gameInfo.address) {
-            let index = this.watchedGameAddresses.indexOf(gameInfo.address);
-            if (index === -1) {
-                let data: GameData;
-                let game = this.BlindGame.at(gameInfo.address);
-         
-                this.watchedGames.push({
-                    address: gameInfo.address,
-                    game: game
-                });
-                this.watchedGameAddresses.push(gameInfo.address);
-                this.database.updateGameAddress(gameInfo.id, gameInfo.address)
-                .then(() => this.database.findHand(gameInfo.address))
-                .then( (hand) => {
-                    game.revealHand(hand.hand, hand.salt, {from: this.walletService.getWallet().getAddresses()[0]})
-                        .then((result) => {console.log('did it'); console.log(result);})
-                        .catch(ex => console.log(ex));}
-                );
-    
-            }
-        
-        }
+        this.database.findGameById(gameInfo.id)
+            .then(game => {
+                if (!game) {
+                    game = new GameData(gameInfo.id);
+                }
+                
+                let lastLocalRound = game.lastRound();
+
+                if(lastLocalRound && 
+                    gameInfo.currentRound == lastLocalRound.round && 
+                    gameInfo.canBeConfirmed &&
+                    (!lastLocalRound.revealed || (new Date().getTime() - lastLocalRound.startedReveal.getTime() > 5 * 1000) )){
+                        let contract = this.BlindGame.at(gameInfo.address);
+                        lastLocalRound.startedReveal = new Date();
+                        this.database.storeGame(game)
+                            .then(() => contract.revealHand(lastLocalRound.hand, lastLocalRound.salt, {from: this.walletService.getWallet().getAddresses()[0]}))
+                            .then( () => {
+                                lastLocalRound.revealed = true;
+                                return this.database.storeGame(game);
+                            })
+                            .catch(ex => console.log(ex));
+                }
+                else{
+            
+                    this.database.storeGame(game);
+                }
+            });
 
     }
-
-}
-
-class GameData {
-    address: string;
-    game: any;
-    
-   
 
 }

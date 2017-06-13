@@ -11,6 +11,7 @@ export class RespondChallengeComponent implements OnInit {
 
     private gameId: number;
     private playerName: string;
+    private roundNumber : number;
 
     constructor(private route: ActivatedRoute, private gamesService: GamesService, private router: Router) {
     }
@@ -19,11 +20,12 @@ export class RespondChallengeComponent implements OnInit {
         this.route.params.subscribe((params) => {
             this.gameId = parseInt(params['gameid']);
             this.playerName = params['playername'];
+            this.roundNumber = parseInt(params['roundNumber']);
         });
     }
 
     onHandPlayed(hand: Hands) {
-        this.gamesService.respondToChallenge(this.gameId, hand)
+        this.gamesService.respondToChallenge(this.gameId, hand, this.roundNumber)
             .then(() => {
                 this.router.navigate(['/home'])
             });

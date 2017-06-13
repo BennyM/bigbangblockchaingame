@@ -62,7 +62,7 @@ import { FormsModule } from "@angular/forms";
             { path: 'players', component: PlayerListComponent, canActivate: [AuthenticationCanActivateService]},
             { path: 'register', component: RegisterComponent},
             { path: 'challenge/:playerid/:playername', component: ChallengePlayerComponent, canActivate: [AuthenticationCanActivateService]},
-            { path: 'respond-challenge/:gameid/:playername', component: RespondChallengeComponent, canActivate: [AuthenticationCanActivateService]},
+            { path: 'respond-challenge/:gameid/:playername/:roundNumber', component: RespondChallengeComponent, canActivate: [AuthenticationCanActivateService]},
             { path: '**', redirectTo: 'home'}
         ])
     ]

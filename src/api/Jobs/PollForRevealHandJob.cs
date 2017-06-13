@@ -57,9 +57,9 @@ namespace api.Jobs
             if (changes.Any())
             {
                 var game = _dbContext.Games.Include(x => x.Rounds).Single(x => x.Id == gameId);
-                foreach (var drawRound in changes)
+                foreach (var revealRound in changes)
                 {
-                    var round = game.Rounds.Single(x => x.RoundNumber == drawRound.Event.RoundNumber);
+                    var round = game.Rounds.Single(x => x.RoundNumber == revealRound.Event.RoundNumber);
                     round.Mined = true;
                 }
             }

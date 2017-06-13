@@ -14,7 +14,7 @@
         <tr *ngFor="let game of games">
             <td>{{game.opponentName}}</td>
             <td>
-                <div *ngIf="game.winner == null && game.currentRound == 0">
+                <div *ngIf="game.winner == null && game.currentRound === 0">
                     <span *ngIf="!game.handPlayed">You were challenged! Respond in kind.</span>
                     <span *ngIf="game.handPlayed">Wait for your opponent...</span>
                 </div>

@@ -28,7 +28,7 @@ export class GameListComponent implements OnInit, OnDestroy {
     }
 
     onRespondClick(game: Game): void {
-        this.router.navigate(['/respond-challenge', game.id, game.opponentName]);
+        this.router.navigate(['/respond-challenge', game.id, game.opponentName, game.currentRound]);
     }
 }
 

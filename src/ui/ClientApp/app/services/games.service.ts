@@ -50,7 +50,7 @@ export class GamesService {
             });
     }
 
-    respondToChallenge(gameId: number, hand: Hands): Promise<void> {
+    respondToChallenge(gameId: number, hand: Hands, roundNumber : number): Promise<void> {
         this.stateService.startLoading();
         var salt = randomstring.generate(7);
         var hashedHand = '0x' + abi.soliditySHA3(['uint8', 'string'], [hand, salt]).toString('hex');
@@ -59,7 +59,7 @@ export class GamesService {
             .post(`${this.configService.apiUrl}/api/games/${gameId}/hand`, { hashedHand: hashedHand })
             .toPromise()
             .then(resp => {
-                let gameHand = new GameHand(0,hand,salt);
+                let gameHand = new GameHand(roundNumber,hand,salt);
                 return this.database.storeHand(gameHand, gameId);
             })
             .then(() => {
@@ -77,4 +77,5 @@ export class Game {
     gameInitiated: boolean;
     currentRound: number;
     winner: boolean;
+    canBeConfirmed  : boolean
 }

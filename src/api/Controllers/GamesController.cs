@@ -64,11 +64,14 @@ namespace api.Data
                     CreateDate = game.DateCreated,
                     GameInitiated = game.Challenger.Id == userId,
                     CurrentRound = lastRound.RoundNumber,
-                    Winner = game.Winner != null ? game.Winner.Id == userId : (bool?)null
+                    Winner = game.Winner != null ? game.Winner.Id == userId : (bool?)null,
+                    CanBeConfirmed = lastRound.Mined
                 });
             }
             return models;
         }
+
+
 
         [HttpPost]
         [Route("")]
@@ -148,9 +151,9 @@ namespace api.Data
             {
                 var contract = web3.Eth.GetContract(abi, game.Address);
                 var playHandsFunction = contract.GetFunction("playHands");
-                var trx = await playHandsFunction.SendTransactionAsync(_account.Value.MasterAccountAddress,new HexBigInteger(1000000),HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent));
-               PollForRevealHandJob revealHandJob = new PollForRevealHandJob(_context, _account);
-                BackgroundJob.Schedule(() => revealHandJob.PollForReveal(trx, game.Address,game.Id), TimeSpan.FromSeconds(5));
+                var trx = await playHandsFunction.SendTransactionAsync(_account.Value.MasterAccountAddress, new HexBigInteger(1000000), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent));
+                PollForRevealHandJob revealHandJob = new PollForRevealHandJob(_context, _account);
+                BackgroundJob.Schedule(() => revealHandJob.PollForReveal(trx, game.Address, game.Id), TimeSpan.FromSeconds(5));
                 await _context.SaveChangesAsync();
             }
 
@@ -173,6 +176,8 @@ namespace api.Data
 
         public long CurrentRound { get; set; }
         public bool? Winner { get; set; }
+
+        public bool CanBeConfirmed { get; set; }
     }
 
     public class ChallengeOpponentModel

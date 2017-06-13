@@ -1,3 +1,4 @@
+import { Game } from './games.service';
 import { Injectable } from '@angular/core';
 import { HandConfirmationService } from './hand-confirmation.service';
 import { AngularIndexedDB } from 'angular2-indexeddb';
@@ -12,8 +13,15 @@ export class GameDatabaseService{
         this.db.createStore(1, (evt) => {
             let objectStore = evt.currentTarget.result.createObjectStore(
                 'games', { keyPath: "id", autoIncrement: false });
-            objectStore.createIndex("address", "address", { unique: false });
         });
+    }
+
+    findGameById(id : number) : Promise<GameData>{
+        return this.db.getByKey('games',id);
+    }
+
+    storeGame(data : GameData ) : Promise<GameData>{
+         return this.db.update('games', data);
     }
 
     storeHand(data : GameHand, gameId : number) : Promise<any>{
@@ -29,43 +37,30 @@ export class GameDatabaseService{
                 }
             });
     }
-
-    updateGameAddress(id : number, address : string) : Promise<any>{
-        return this.db.getByKey('games',id)
-            .then((item : GameData) =>{
-                if(item != null && item.address != address){
-                    item.address = address;
-                   return this.db.update('games', item);
-                } else if (item == null){
-                    var data = new GameData(id);
-                    data.address = address;
-                    return this.db.add('games', data);
-                }
-            });
-    }
-
-    findHand(address : string) : Promise<GameHand>{
-        return this.db.getByIndex('games', 'address', address)
-            .then((game : GameData) =>  game.hands[game.hands.length - 1]);
-    }
 }
 
 export class GameData{
 
-    public address : string;
     public hands : GameHand[];
 
     constructor(public id : number){
         this.hands = [];
     }
     
-  
+    public lastRound() : GameHand{
+        let roundNumbers = this.hands.map(item => item.round);
+        if(roundNumbers && roundNumbers.length > 0){
+            let lastRoundNumber = Math.max.apply(null, roundNumbers);
+            return this.hands.find(x => x.round == lastRoundNumber);
+        }
+        return null;
+    }
 }
 
 export class GameHand{
 
-
-    constructor(public round : number, public hand : Hands, public salt : string, public revealed : boolean = false){
+    constructor(public round : number, public hand : Hands, public salt : string, public revealed : boolean = false, public startedReveal : Date = null){
        
     }
+
 }
