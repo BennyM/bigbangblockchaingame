@@ -9,6 +9,9 @@ using api.Util;
 using Hangfire;
 using api.Jobs;
 using Nethereum.Web3;
+using Hangfire.Dashboard;
+using Hangfire.Annotations;
+using System;
 
 namespace api
 {
@@ -59,11 +62,22 @@ namespace api
 
             app.UseMvc();
 
-            app.UseHangfireDashboard();
+            app.UseHangfireDashboard("/nothangfire", new DashboardOptions
+            {
+                Authorization = new [] { new CustomDashboardAuthorizationFilter() }
+            });
             app.UseHangfireServer();
 
             app.ApplicationServices.GetService<BbbgContext>().Database.Migrate();
 
+        }
+    }
+
+    public class CustomDashboardAuthorizationFilter : IDashboardAuthorizationFilter
+    {
+        public bool Authorize([NotNull] DashboardContext context)
+        {
+            return true;
         }
     }
 }
