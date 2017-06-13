@@ -33,7 +33,7 @@ export class HandConfirmationService {
                 if(lastLocalRound && 
                     gameInfo.currentRound == lastLocalRound.round && 
                     gameInfo.canBeConfirmed &&
-                    (!lastLocalRound.revealed || (new Date().getTime() - lastLocalRound.startedReveal.getTime() > 5 * 1000) )){
+                    (!lastLocalRound.revealed && (new Date().getTime() - lastLocalRound.startedReveal.getTime() > 5 * 60 * 1000) )){
                         let contract = this.BlindGame.at(gameInfo.address);
                         lastLocalRound.startedReveal = new Date();
                         this.database.storeGame(game)
