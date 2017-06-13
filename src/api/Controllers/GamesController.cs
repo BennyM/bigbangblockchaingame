@@ -138,7 +138,7 @@ namespace api.Data
             var web3 = new Web3(new Account(_account.Value.MasterAccountPrivateKey), _account.Value.Address);
             if (game.Address == null)
             {
-                var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, new HexBigInteger(1000000),
+                var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, new HexBigInteger(2000000),
                     game.Challenger.Address, game.Opponent.Address, HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent));
                 game.CreatedTransactionHash = deployedContractResult;
                 _context.SaveChanges();
