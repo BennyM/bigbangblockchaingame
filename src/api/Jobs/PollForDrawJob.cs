@@ -71,7 +71,7 @@ namespace api.Jobs
 
             var winnerFunc = contract.GetFunction("winner");
             var addr = await winnerFunc.CallAsync<string>();
-            if (addr != "0x0000000000000000000000000000000000000000")
+            if (addr == "0x0000000000000000000000000000000000000000")
             {
                 BackgroundJob.Schedule(() => PollForDraw(filterId, contractAddress, gameId), TimeSpan.FromSeconds(5));
             }
