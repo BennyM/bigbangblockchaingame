@@ -28,7 +28,7 @@ namespace api.Jobs
             _dbContext = dbContext;
             _account = account;
         }
-        public async Task PollForAddress(long gameId)
+        public async Task PollForAddress()
         {
             var web3 = new Web3(new Account(_account.Value.MasterAccountPrivateKey), _account.Value.Address);
             var transactionPolling = new TransactionReceiptPollingService(web3);
@@ -46,38 +46,50 @@ namespace api.Jobs
                     binary = obj.Property("unlinked_binary").Value.ToString();
                 }
             }
-            var game = _dbContext.Games.Include(x => x.Rounds).Single(x => x.Id == gameId);
-            var currentRound = game.Rounds.Single();
-            var contractAddress = await
-                transactionPolling.DeployContractAndGetAddressAsync(
-                    () =>
-                        web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, new HexBigInteger(2000000),
-                    game.Challenger.Address, game.Opponent.Address, HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent)));
+
+            foreach (var game in _dbContext.Games
+                .Where(x => x.Address == null)
+                .OrderBy(x => x.DateCreated)
+                .Include(x => x.Rounds))
+            {
+
+                if (game != null)
+                {
+                    var currentRound = game.Rounds.Single();
+                    var contractAddress = await
+                        transactionPolling.DeployContractAndGetAddressAsync(
+                            () =>
+                                web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, new HexBigInteger(2000000),
+                            game.Challenger.Address, game.Opponent.Address, HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent)));
 
 
-            game.Address = contractAddress;
-            game.Rounds.Single().Mined = true;
+                    game.Address = contractAddress;
+                    game.Rounds.Single().Mined = true;
 
-            var contract = web3.Eth.GetContract(abi, contractAddress);
+                    var contract = web3.Eth.GetContract(abi, contractAddress);
 
-            var drawEvent = contract.GetEvent("Draw");
-            var winnerEvent = contract.GetEvent("GameEnd");
-            var startRevealEvent = contract.GetEvent("StartReveal");
-            var createDrawEventFilter = drawEvent.CreateFilterAsync();
-            var createWinnerEventFilter = winnerEvent.CreateFilterAsync();
-            var createStartRevealEvent = startRevealEvent.CreateFilterAsync();
-            await Task.WhenAll(createDrawEventFilter, createWinnerEventFilter, createStartRevealEvent);
-            var drawEventFilterId = createDrawEventFilter.Result.HexValue;
-            game.DrawEventFilterId = drawEventFilterId;
-            game.WinnerEventFilterId = createWinnerEventFilter.Result.HexValue;
-            _dbContext.SaveChanges();
-            var drawEventJob = new PollForDrawJob(_dbContext, _account);
-            var winnerJob = new WinnerPollJob(_dbContext, _account);
+                    var drawEvent = contract.GetEvent("Draw");
+                    var winnerEvent = contract.GetEvent("GameEnd");
+                    var startRevealEvent = contract.GetEvent("StartReveal");
+                    var createDrawEventFilter = drawEvent.CreateFilterAsync();
+                    var createWinnerEventFilter = winnerEvent.CreateFilterAsync();
+                    var createStartRevealEvent = startRevealEvent.CreateFilterAsync();
+                    await Task.WhenAll(createDrawEventFilter, createWinnerEventFilter, createStartRevealEvent);
+                    var drawEventFilterId = createDrawEventFilter.Result.HexValue;
+                    game.DrawEventFilterId = drawEventFilterId;
+                    game.WinnerEventFilterId = createWinnerEventFilter.Result.HexValue;
+                    _dbContext.SaveChanges();
+                    var drawEventJob = new PollForDrawJob(_dbContext, _account);
+                    var winnerJob = new WinnerPollJob(_dbContext, _account);
 
-            BackgroundJob.Schedule(() => drawEventJob.PollForDraw(drawEventFilterId, contractAddress, gameId), TimeSpan.FromSeconds(5));
-            BackgroundJob.Schedule(() => winnerJob.PollForWinner(createWinnerEventFilter.Result.HexValue, contractAddress, gameId), TimeSpan.FromSeconds(5));
-            PollForRevealHandJob revealHandJob = new PollForRevealHandJob(_dbContext, _account);
-            BackgroundJob.Schedule(() => revealHandJob.PollForReveal(createStartRevealEvent.Result.HexValue, game.Address, game.Id), TimeSpan.FromSeconds(5));
+                    BackgroundJob.Schedule(() => drawEventJob.PollForDraw(drawEventFilterId, contractAddress, game.Id), TimeSpan.FromSeconds(5));
+                    BackgroundJob.Schedule(() => winnerJob.PollForWinner(createWinnerEventFilter.Result.HexValue, contractAddress, game.Id), TimeSpan.FromSeconds(5));
+                    PollForRevealHandJob revealHandJob = new PollForRevealHandJob(_dbContext, _account);
+                    BackgroundJob.Schedule(() => revealHandJob.PollForReveal(createStartRevealEvent.Result.HexValue, game.Address, game.Id), TimeSpan.FromSeconds(5));
+
+                }
+
+            }
 
         }
     }

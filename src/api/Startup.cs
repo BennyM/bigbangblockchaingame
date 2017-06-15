@@ -69,7 +69,8 @@ namespace api
             app.UseHangfireServer();
 
             app.ApplicationServices.GetService<BbbgContext>().Database.Migrate();
-
+            CreateGameAddressJob j = null;
+            RecurringJob.AddOrUpdate(() => j.PollForAddress(), Cron.Minutely);
         }
     }
 
