@@ -52,18 +52,23 @@ namespace api.Jobs
 
                 var drawEvent = contract.GetEvent("Draw");
                 var winnerEvent = contract.GetEvent("GameEnd");
+                var startRevealEvent = contract.GetEvent("StartReveal");
                 var createDrawEventFilter = drawEvent.CreateFilterAsync();
                 var createWinnerEventFilter = winnerEvent.CreateFilterAsync();
-                await Task.WhenAll(createDrawEventFilter, createWinnerEventFilter);
+                var createStartRevealEvent = startRevealEvent.CreateFilterAsync();
+                await Task.WhenAll(createDrawEventFilter, createWinnerEventFilter, createStartRevealEvent);
                 var drawEventFilterId = createDrawEventFilter.Result.HexValue;
                 game.DrawEventFilterId = drawEventFilterId;
                 game.WinnerEventFilterId = createWinnerEventFilter.Result.HexValue;
                 _dbContext.SaveChanges();
                 var drawEventJob = new PollForDrawJob(_dbContext, _account);
                 var winnerJob = new WinnerPollJob(_dbContext, _account);
+               
                  BackgroundJob.Schedule(() => drawEventJob.PollForDraw(drawEventFilterId, contractAddress,gameId), TimeSpan.FromSeconds(5));
                 BackgroundJob.Schedule(() => winnerJob.PollForWinner(createWinnerEventFilter.Result.HexValue, contractAddress,gameId), TimeSpan.FromSeconds(5));
-           
+                PollForRevealHandJob revealHandJob = new PollForRevealHandJob(_dbContext, _account);
+                BackgroundJob.Schedule(() => revealHandJob.PollForReveal(createStartRevealEvent.Result.HexValue, game.Address, game.Id), TimeSpan.FromSeconds(5));
+                
             }
             else
             {
