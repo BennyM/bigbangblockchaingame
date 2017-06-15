@@ -28,7 +28,7 @@ namespace api.Jobs
             _dbContext = dbContext;
             _account = account;
         }
-        public async Task PollForAddress()
+        public void PollForAddress()
         {
             var web3 = new Web3(new Account(_account.Value.MasterAccountPrivateKey), _account.Value.Address);
             var transactionPolling = new TransactionReceiptPollingService(web3);
@@ -56,11 +56,11 @@ namespace api.Jobs
                 if (game != null)
                 {
                     var currentRound = game.Rounds.Single();
-                    var contractAddress = await
+                    var contractAddress = 
                         transactionPolling.DeployContractAndGetAddressAsync(
                             () =>
                                 web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, new HexBigInteger(2000000),
-                            game.Challenger.Address, game.Opponent.Address, HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent)));
+                            game.Challenger.Address, game.Opponent.Address, HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent))).Result;
 
 
                     game.Address = contractAddress;
@@ -74,7 +74,7 @@ namespace api.Jobs
                     var createDrawEventFilter = drawEvent.CreateFilterAsync();
                     var createWinnerEventFilter = winnerEvent.CreateFilterAsync();
                     var createStartRevealEvent = startRevealEvent.CreateFilterAsync();
-                    await Task.WhenAll(createDrawEventFilter, createWinnerEventFilter, createStartRevealEvent);
+                    Task.WaitAll(createDrawEventFilter, createWinnerEventFilter, createStartRevealEvent);
                     var drawEventFilterId = createDrawEventFilter.Result.HexValue;
                     game.DrawEventFilterId = drawEventFilterId;
                     game.WinnerEventFilterId = createWinnerEventFilter.Result.HexValue;
