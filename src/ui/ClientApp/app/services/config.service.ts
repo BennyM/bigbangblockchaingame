@@ -9,7 +9,7 @@ export class ConfigService {
             if(window.location.hostname == 'localhost') {
                 this.apiUrl = 'http://localhost:5000'
             } else {
-                this.apiUrl = 'https://bbbgapi.azurewebsites.net'
+                this.apiUrl = 'http://bbbgapi.azurewebsites.net'
             }
         }
     }
