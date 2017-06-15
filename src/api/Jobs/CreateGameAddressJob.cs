@@ -47,7 +47,7 @@ namespace api.Jobs
                 }
             }
 
-            var game = _dbContext.Games.Include(x => x.Rounds).SingleOrDefault(x => x.Id == gameId);
+            var game = _dbContext.Games.Include(x=>x.Challenger).Include(x=>x.Opponent).Include(x => x.Rounds).SingleOrDefault(x => x.Id == gameId);
             var currentRound = game.Rounds.Single();
 
 
