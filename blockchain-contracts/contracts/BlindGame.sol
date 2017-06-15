@@ -9,30 +9,30 @@ contract BlindGame {
     event StartReveal(uint roundNumber);
 
     struct Hand{
-        bytes32 blindHand1;
-        bytes32 blindHand2;
-        State player1Hand;
-        State player2Hand;        
+        bytes32 blindHand;
+        State playerHand;        
     }
 
     address public gameMaster;
     address public player1;
     address public player2;
     address public winner;
-    Hand[] hands;
+    Hand[] player1Hands;
+    Hand[] player2Hands;
 
     function BlindGame(address player1addr, address player2addr, bytes32 blindplayer1Hand, bytes32 blindplayer2Hand){
         player1 = player1addr;
         player2 = player2addr;
         gameMaster = msg.sender;
-        hands.push(Hand({player1Hand: State.None, player2Hand: State.None, blindHand1: blindplayer1Hand, blindHand2 : blindplayer2Hand}));
+        player1Hands.push(Hand({playerHand: State.None, blindHand : blindplayer1Hand}));
+        player2Hands.push(Hand({playerHand: State.None, blindHand : blindplayer2Hand}));
     }
 
     function getHandFrom(uint index) constant returns (bytes32, uint8, bytes32, uint8){
-        bytes32 bs1 = hands[index].blindHand1;
-        State s1 = hands[index].player1Hand;
-        bytes32 bs2 = hands[index].blindHand2;
-        State s2 = hands[index].player2Hand; 
+        bytes32 bs1 = player1Hands[index].blindHand;
+        State s1 = player1Hands[index].playerHand;
+        bytes32 bs2 = player2Hands[index].blindHand;
+        State s2 = player2Hands[index].playerHand; 
         return(bs1, uint8(s1), bs2, uint8(s2));
     }
 
@@ -41,112 +41,126 @@ contract BlindGame {
         return val == empty;
     }
 
-    function revealHand(State hand, string secret) {        
-        var currentRound = hands[hands.length - 1];
-        if(winner != player1 && winner != player2 && !isEmptyBytes32(currentRound.blindHand1)  && !isEmptyBytes32(currentRound.blindHand2))
+    function revealHand(State hand, string secret) {
+        var currentRoundIndex = player1Hands.length -1;
+        var currentRoundPlayer1 = player1Hands[currentRoundIndex];
+        var currentRoundPlayer2 = player2Hands[currentRoundIndex];
+        if(winner != player1 && winner != player2 && !isEmptyBytes32(currentRoundPlayer1.blindHand)  && !isEmptyBytes32(currentRoundPlayer2.blindHand))
         {
-            if(msg.sender == player1 && currentRound.player1Hand == State.None)
+            if(msg.sender == player1 && currentRoundPlayer1.playerHand == State.None)
             {
-                if(currentRound.blindHand1 == keccak256(hand, secret))
+                if(currentRoundPlayer1.blindHand == keccak256(hand, secret))
                 {
-                    currentRound.player1Hand = hand;
+                    currentRoundPlayer1.playerHand = hand;
                 }
             }
-            else if(msg.sender == player2 && currentRound.player2Hand == State.None)
+            else if(msg.sender == player2 && currentRoundPlayer2.playerHand == State.None)
             {
-                if(currentRound.blindHand2 == keccak256(hand, secret))
+                if(currentRoundPlayer2.blindHand == keccak256(hand, secret))
                 {
-                    currentRound.player2Hand = hand;
+                    currentRoundPlayer2.playerHand = hand;
                 }
             }
-            if(currentRound.player1Hand != State.None && currentRound.player2Hand != State.None)
+            if(currentRoundPlayer1.playerHand != State.None && currentRoundPlayer2.playerHand != State.None)
             {
-                declareWinner(currentRound);
+                declareWinner(currentRoundPlayer1, currentRoundPlayer2);
             }
         }        
     }
 
     function playHand(bytes32 blindHand) {
-        var currentRound = hands[hands.length - 1];
-        if(msg.sender == player1 && isEmptyBytes32(currentRound.blindHand1)){
-            currentRound.blindHand1 = blindHand;
+        var currentRoundIndex = player1Hands.length -1;
+        var currentRoundPlayer1 = player1Hands[currentRoundIndex];
+        var currentRoundPlayer2 = player2Hands[currentRoundIndex];
+        if(msg.sender == player1 && isEmptyBytes32(currentRoundPlayer1.blindHand)){
+            currentRoundPlayer1.blindHand = blindHand;
         }
-        else if(msg.sender == player2 && isEmptyBytes32(currentRound.blindHand2)){
-            currentRound.blindHand2 = blindHand;
+        else if(msg.sender == player2 && isEmptyBytes32(currentRoundPlayer2.blindHand)){
+            currentRoundPlayer2.blindHand = blindHand;
         }
-        if(!isEmptyBytes32(currentRound.blindHand1) && !isEmptyBytes32(currentRound.blindHand2)){
-           StartReveal(hands.length - 1);
+        if(!isEmptyBytes32(currentRoundPlayer1.blindHand) && !isEmptyBytes32(currentRoundPlayer2.blindHand)){
+           StartReveal(currentRoundIndex);
         }
     }
 
     function playHands(bytes32 blindHandPlayer1, bytes32 blindHandPlayer2){
         if(msg.sender == gameMaster){
-            var currentRound = hands[hands.length - 1];
-            if(isEmptyBytes32(currentRound.blindHand1)){
-                currentRound.blindHand1 = blindHandPlayer1;
+            var currentRoundIndex = player1Hands.length - 1;
+            var currentRoundPlayer1 = player1Hands[currentRoundIndex];
+            var currentRoundPlayer2 = player2Hands[currentRoundIndex];
+            if(isEmptyBytes32(currentRoundPlayer1.blindHand)){
+                currentRoundPlayer1.blindHand = blindHandPlayer1;
             }
-            if(isEmptyBytes32(currentRound.blindHand2)){
-                currentRound.blindHand2 = blindHandPlayer2;
+            if(isEmptyBytes32(currentRoundPlayer2.blindHand)){
+                currentRoundPlayer2.blindHand = blindHandPlayer2;
             }
-            StartReveal(hands.length - 1);
+            if(!isEmptyBytes32(currentRoundPlayer1.blindHand) && !isEmptyBytes32(currentRoundPlayer2.blindHand)){
+                StartReveal(currentRoundIndex);
+            }
         }
     }
 
-    function declareWinner(Hand currentRound) private{
-         if(currentRound.player1Hand != State.None && currentRound.player2Hand != State.None){
-             if(currentRound.player1Hand == currentRound.player2Hand){
-                hands.push(Hand({
-                                    blindHand1 : 0,
-                                    blindHand2: 0,
-                                    player1Hand : State.None, 
-                                    player2Hand : State.None,
-                                }));
-                Draw(currentRound.player1Hand, hands.length - 1);
+    function declareWinner(Hand player1Hand, Hand player2Hand) private{
+         if(player1Hand.playerHand != State.None && player2Hand.playerHand != State.None){
+             if(player1Hand.playerHand == player2Hand.playerHand){
+                player1Hands.push(
+                    Hand({
+                        blindHand : 0,
+                        playerHand : State.None
+                    })
+                );
+                player2Hands.push(
+                    Hand({
+                        blindHand : 0,
+                        playerHand : State.None
+                    })
+                );
+                Draw(player1Hand.playerHand, player1Hands.length - 1);
             }
         
         else { 
             address loser;
             State losingHand;
             State winningHand;
-            if(currentRound.player1Hand == State.Rock && (currentRound.player2Hand == State.Lizard || currentRound.player2Hand == State.Scissor)){
+            if(player1Hand.playerHand == State.Rock && (player2Hand.playerHand == State.Lizard || player2Hand.playerHand == State.Scissor)){
                 winner = player1;
                 loser = player2;
-                losingHand = currentRound.player2Hand;
-                winningHand = currentRound.player1Hand;
-            } else if(currentRound.player1Hand == State.Paper && (currentRound.player2Hand == State.Rock || currentRound.player2Hand == State.Spock))
+                losingHand = player2Hand.playerHand;
+                winningHand = player1Hand.playerHand;
+            } else if(player1Hand.playerHand == State.Paper && (player2Hand.playerHand== State.Rock || player2Hand.playerHand == State.Spock))
             {
                 winner = player1;
                 loser = player2;
-                losingHand = currentRound.player2Hand;
-                winningHand = currentRound.player1Hand;
+                losingHand = player2Hand.playerHand;
+                winningHand = player1Hand.playerHand;
             }
-            else if(currentRound.player1Hand == State.Scissor && (currentRound.player2Hand == State.Paper || currentRound.player2Hand == State.Lizard))
+            else if(player1Hand.playerHand == State.Scissor && (player2Hand.playerHand == State.Paper || player2Hand.playerHand == State.Lizard))
             {
                 winner = player1;
                 loser = player2;
-                losingHand = currentRound.player2Hand;
-                winningHand = currentRound.player1Hand;
+                losingHand = player2Hand.playerHand;
+                winningHand = player1Hand.playerHand;
             }
-            else if(currentRound.player1Hand == State.Lizard && (currentRound.player2Hand == State.Spock || currentRound.player2Hand == State.Paper))
+            else if(player1Hand.playerHand == State.Lizard && (player2Hand.playerHand == State.Spock || player2Hand.playerHand == State.Paper))
             {
                 winner = player1;
                 loser = player2;
-                losingHand = currentRound.player2Hand;
-                winningHand = currentRound.player1Hand;
+                losingHand = player2Hand.playerHand;
+                winningHand = player1Hand.playerHand;
             }
-            else if(currentRound.player1Hand == State.Spock && (currentRound.player2Hand == State.Scissor || currentRound.player2Hand == State.Rock))
+            else if(player1Hand.playerHand == State.Spock && (player2Hand.playerHand == State.Scissor || player2Hand.playerHand == State.Rock))
             {
                 winner = player1;
                 loser = player2;
-                losingHand = currentRound.player2Hand;
-                winningHand = currentRound.player1Hand;
+                losingHand = player2Hand.playerHand;
+                winningHand = player1Hand.playerHand;
             }
             else
             {
                 winner = player2;
                 loser = player1;
-                losingHand = currentRound.player1Hand;
-                winningHand = currentRound.player2Hand;
+                losingHand = player1Hand.playerHand;
+                winningHand = player2Hand.playerHand;
             }
             GameEnd(winner, loser, winningHand, losingHand);
         }}
