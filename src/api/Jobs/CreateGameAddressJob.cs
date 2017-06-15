@@ -50,12 +50,13 @@ namespace api.Jobs
             foreach (var game in _dbContext.Games
                 .Where(x => x.Address == null)
                 .OrderBy(x => x.DateCreated)
-                .Include(x => x.Rounds))
+                .Include(x => x.Rounds).ToList()
+                )
             {
-
-                if (game != null)
+                var currentRound = game.Rounds.Single();
+                if (game != null && currentRound.HashedHandChallenger != null && currentRound.HashedHandOpponent != null)
                 {
-                    var currentRound = game.Rounds.Single();
+                    
                     var contractAddress = 
                         transactionPolling.DeployContractAndGetAddressAsync(
                             () =>
@@ -64,7 +65,7 @@ namespace api.Jobs
 
 
                     game.Address = contractAddress;
-                    game.Rounds.Single().Mined = true;
+                    currentRound.Mined = true;
 
                     var contract = web3.Eth.GetContract(abi, contractAddress);
 
