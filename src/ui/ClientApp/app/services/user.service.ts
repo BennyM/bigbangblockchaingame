@@ -32,13 +32,12 @@ export class UserService {
         }
     }
 
-    createNewUser(email: string, nickname: string): Promise<void> {
+    createNewUser(nickname: string): Promise<void> {
         this.stateService.startLoading();
-        return this.http.post(this.addUserUrl, JSON.stringify({email: email, nickname: nickname}), this.requestOptions)
+        return this.http.post(this.addUserUrl, JSON.stringify({nickname: nickname}), this.requestOptions)
             .toPromise()
             .then(response => {
                 this.currentUser = new User();
-                this.currentUser.email = email;
                 this.currentUser.nickname = nickname;
                 this.currentUser.lousySecurityKey = response.json();
                 if(typeof window !== 'undefined') {
@@ -62,7 +61,6 @@ export class UserService {
 }
 
 export class User {
-    email: string;
     nickname: string;
     lousySecurityKey: string;
 }
