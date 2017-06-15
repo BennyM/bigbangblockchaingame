@@ -29,7 +29,7 @@ export class GamesService {
                 games.forEach(item => {
                     this.confirmationService.watchGame(item);
                 });
-                return games
+                return games;
             });
     }
 
@@ -77,5 +77,7 @@ export class Game {
     gameInitiated: boolean;
     currentRound: number;
     winner: boolean;
-    canBeConfirmed  : boolean
+    canBeConfirmed  : boolean;
+    winningHand: Hands;
+    losingHand: Hands;
 }
