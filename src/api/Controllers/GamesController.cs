@@ -153,7 +153,7 @@ namespace api.Data
             {
                 var contract = web3.Eth.GetContract(abi, game.Address);
                 var playHandsFunction = contract.GetFunction("playHands");
-                var trx = await playHandsFunction.SendTransactionAsync(_account.Value.MasterAccountAddress, new HexBigInteger(2000000), new HexBigInteger(1), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent));
+                var trx = await playHandsFunction.SendTransactionAsync(_account.Value.MasterAccountAddress, new HexBigInteger(2000000), new HexBigInteger(0), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent));
 
             }
 
