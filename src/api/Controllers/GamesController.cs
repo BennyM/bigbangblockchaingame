@@ -137,20 +137,19 @@ namespace api.Data
                 }
             }
 
-            var web3 = new Web3(new Account(_account.Value.MasterAccountPrivateKey), _account.Value.Address);
             if (game.Address == null)
             {
-                var deployedContractResult = await web3.Eth.DeployContract.SendRequestAsync(abi, binary, _account.Value.MasterAccountAddress, new HexBigInteger(2000000),
-                    game.Challenger.Address, game.Opponent.Address, HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent));
-                game.CreatedTransactionHash = deployedContractResult;
-                _context.SaveChanges();
+                game.CreatedTransactionHash = "";
+                
                 CreateGameAddressJob job = new CreateGameAddressJob(_context, _account);
                 long gameId = game.Id;
-                BackgroundJob.Schedule(() => job.PollForAddress(deployedContractResult, game.Id), TimeSpan.FromSeconds(5));
+                BackgroundJob.Schedule(() => job.PollForAddress(game.Id), TimeSpan.FromSeconds(5));
                 await _context.SaveChangesAsync();
             }
             else if (currentRound.HashedHandChallenger != null && currentRound.HashedHandOpponent != null)
             {
+                     var web3 = new Web3(new Account(_account.Value.MasterAccountPrivateKey), _account.Value.Address);
+       
                 var contract = web3.Eth.GetContract(abi, game.Address);
                 var playHandsFunction = contract.GetFunction("playHands");
                 var trx = await playHandsFunction.SendTransactionAsync(_account.Value.MasterAccountAddress, new HexBigInteger(2000000), new HexBigInteger(0), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent));
