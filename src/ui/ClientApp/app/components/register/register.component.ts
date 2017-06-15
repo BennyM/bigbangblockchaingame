@@ -20,7 +20,7 @@ export class RegisterComponent {
     }
 
     addPlayer(): void {
-        this.userService.createNewUser(this.newUser.email, this.newUser.nickname)
+        this.userService.createNewUser(this.newUser.nickname)
             .then(() => {
                 this.router.navigate(['/home']);
             });
@@ -28,6 +28,5 @@ export class RegisterComponent {
 }
 
 export class RegisterUser {
-    email: string;
     nickname: string;
 }

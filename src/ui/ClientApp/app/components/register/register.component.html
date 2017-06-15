@@ -3,10 +3,6 @@
 <div class="container">
     <form (ngSubmit)="addPlayer()" #userForm="ngForm">
         <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" [(ngModel)]="newUser.email" class="form-control" name="email" required />
-        </div>
-        <div class="form-group">
             <label for="nickname">Nickname</label>
             <input type="text" [(ngModel)]="newUser.nickname" class="form-control" name="nickname" required />
         </div>

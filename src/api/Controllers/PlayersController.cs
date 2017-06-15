@@ -43,7 +43,6 @@ namespace api.Controllers
                 var newPlayer = new Player 
                 {
                     Id = Guid.NewGuid(),
-                    Email = request.Email,
                     Nickname = request.Nickname,
                     LousySecurityKey = Guid.NewGuid()
                 };
@@ -79,8 +78,6 @@ namespace api.Controllers
 
     public class AddPlayerRequest
     {
-        [Required]
-        public string Email { get; set; }
         [Required]
         public string Nickname { get; set; }
     }

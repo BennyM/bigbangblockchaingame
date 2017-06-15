@@ -12,13 +12,5 @@ namespace api.Data
         public DbSet<Player> Players { get; set; }
 
         public DbSet<Game> Games { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Player>()
-                .HasIndex(x => x.Email)
-                .IsUnique(true);
-
-        }
     }
 }
