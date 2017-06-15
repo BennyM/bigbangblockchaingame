@@ -62,8 +62,9 @@ namespace api.Jobs
                     var round = game.Rounds.Single(x => x.RoundNumber == revealRound.Event.RoundNumber);
                     round.Mined = true;
                 }
+                _dbContext.SaveChanges();
             }
-            _dbContext.SaveChanges();
+            
             var winnerFunc = contract.GetFunction("winner");
             var addr = await winnerFunc.CallAsync<string>();
             if (addr == "0x0000000000000000000000000000000000000000")

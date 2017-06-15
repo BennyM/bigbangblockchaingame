@@ -66,8 +66,9 @@ namespace api.Jobs
                         game.Rounds.Add(new GameRound() { RoundNumber = drawEvents.NewRound });
                     }
                 }
+                _dbContext.SaveChanges();
             }
-            _dbContext.SaveChanges();
+            
 
             var winnerFunc = contract.GetFunction("winner");
             var addr = await winnerFunc.CallAsync<string>();
