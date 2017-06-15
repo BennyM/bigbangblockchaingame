@@ -65,7 +65,9 @@ namespace api.Data
                     GameInitiated = game.Challenger.Id == userId,
                     CurrentRound = lastRound.RoundNumber,
                     Winner = game.Winner != null ? game.Winner.Id == userId : (bool?)null,
-                    CanBeConfirmed = lastRound.Mined
+                    CanBeConfirmed = lastRound.Mined,
+                    WinningHand = game.WinningHand,
+                    LosingHand = game.LosingHand
                 });
             }
             return models;
@@ -182,6 +184,9 @@ namespace api.Data
         public bool? Winner { get; set; }
 
         public bool CanBeConfirmed { get; set; }
+
+        public Hands? WinningHand { get; set; }
+        public Hands? LosingHand { get; set; }
     }
 
     public class ChallengeOpponentModel
