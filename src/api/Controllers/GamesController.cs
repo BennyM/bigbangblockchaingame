@@ -139,12 +139,10 @@ namespace api.Data
 
             if (game.Address == null)
             {
-                game.CreatedTransactionHash = "";
-                
-              //  CreateGameAddressJob job = new CreateGameAddressJob(_context, _account);
+                CreateGameAddressJob job = new CreateGameAddressJob(_context, _account);
                 long gameId = game.Id;
-              //  BackgroundJob.Schedule(() => job.PollForAddress(), TimeSpan.FromSeconds(5));
-              //  await _context.SaveChangesAsync();
+                BackgroundJob.Schedule(() => job.PollForAddress(gameId), TimeSpan.FromSeconds(5));
+             
             }
             else if (currentRound.HashedHandChallenger != null && currentRound.HashedHandOpponent != null)
             {

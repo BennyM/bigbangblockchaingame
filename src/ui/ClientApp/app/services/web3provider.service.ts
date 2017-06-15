@@ -36,7 +36,7 @@ export class Web3ProviderService {
             };
             var hookedWalletProvider = new HookedWalletSubprovider(opts);
             this.engine.addProvider(hookedWalletProvider);
-           this.engine.addProvider(new Web3Subprovider(new Web3.providers.HttpProvider('http://bclkihf6w.westeurope.cloudapp.azure.com:8545')));
+           this.engine.addProvider(new Web3Subprovider(new Web3.providers.HttpProvider('http://bbbgbcbuj.westeurope.cloudapp.azure.com:8545')));
            
             this.engine.start();
             var web3 = new Web3(this.engine);
