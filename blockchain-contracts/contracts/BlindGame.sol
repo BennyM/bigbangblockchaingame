@@ -7,7 +7,7 @@ contract BlindGame {
     event GameEnd(address winner, address loser, State winningHand, State losingHand); 
     event Draw(State draw, uint newRoundNumber);
     event StartReveal(uint roundNumber);
-    
+
     struct Hand{
         bytes32 blindHand1;
         bytes32 blindHand2;
@@ -28,8 +28,7 @@ contract BlindGame {
         hands.push(Hand({player1Hand: State.None, player2Hand: State.None, blindHand1: blindplayer1Hand, blindHand2 : blindplayer2Hand}));
     }
 
-    function getHandFrom(uint index) constant returns (bytes32, uint8, bytes32, uint8)
-    {
+    function getHandFrom(uint index) constant returns (bytes32, uint8, bytes32, uint8){
         bytes32 bs1 = hands[index].blindHand1;
         State s1 = hands[index].player1Hand;
         bytes32 bs2 = hands[index].blindHand2;
@@ -37,9 +36,14 @@ contract BlindGame {
         return(bs1, uint8(s1), bs2, uint8(s2));
     }
 
+    function isEmptyBytes32(bytes32 val) constant returns (bool) {
+        bytes32 empty;
+        return val == empty;
+    }
+
     function revealHand(State hand, string secret) {        
         var currentRound = hands[hands.length - 1];
-        if(winner != player1 && winner != player2 && currentRound.blindHand1.length > 0 && currentRound.blindHand2.length > 0)
+        if(winner != player1 && winner != player2 && !isEmptyBytes32(currentRound.blindHand1)  && !isEmptyBytes32(currentRound.blindHand2))
         {
             if(msg.sender == player1 && currentRound.player1Hand == State.None)
             {
@@ -64,24 +68,24 @@ contract BlindGame {
 
     function playHand(bytes32 blindHand) {
         var currentRound = hands[hands.length - 1];
-        if(msg.sender == player1 && currentRound.blindHand1.length == 0){
+        if(msg.sender == player1 && isEmptyBytes32(currentRound.blindHand1)){
             currentRound.blindHand1 = blindHand;
         }
-        else if(msg.sender == player2 && currentRound.blindHand2.length == 0){
+        else if(msg.sender == player2 && isEmptyBytes32(currentRound.blindHand2)){
             currentRound.blindHand2 = blindHand;
         }
-        if(currentRound.blindHand1.length > 0 && currentRound.blindHand2.length > 0){
-            StartReveal(hands.length - 1);
+        if(!isEmptyBytes32(currentRound.blindHand1) && !isEmptyBytes32(currentRound.blindHand2)){
+           StartReveal(hands.length - 1);
         }
     }
 
     function playHands(bytes32 blindHandPlayer1, bytes32 blindHandPlayer2){
         if(msg.sender == gameMaster){
             var currentRound = hands[hands.length - 1];
-            if(currentRound.blindHand1.length == 0){
+            if(isEmptyBytes32(currentRound.blindHand1)){
                 currentRound.blindHand1 = blindHandPlayer1;
             }
-            if(currentRound.blindHand2.length == 0){
+            if(isEmptyBytes32(currentRound.blindHand2)){
                 currentRound.blindHand2 = blindHandPlayer2;
             }
             StartReveal(hands.length - 1);
@@ -91,7 +95,12 @@ contract BlindGame {
     function declareWinner(Hand currentRound) private{
          if(currentRound.player1Hand != State.None && currentRound.player2Hand != State.None){
              if(currentRound.player1Hand == currentRound.player2Hand){
-                hands.push(Hand({player1Hand : State.None, player2Hand : State.None, blindHand1 : 0, blindHand2 : 0}));
+                hands.push(Hand({
+                                    blindHand1 : 0,
+                                    blindHand2: 0,
+                                    player1Hand : State.None, 
+                                    player2Hand : State.None,
+                                }));
                 Draw(currentRound.player1Hand, hands.length - 1);
             }
         
