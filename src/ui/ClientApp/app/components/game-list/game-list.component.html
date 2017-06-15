@@ -29,7 +29,26 @@
                 </div>
             </td>
             <td>
-                <button *ngIf="!game.handPlayed" (click)="onRespondClick(game)" class="btn btn-sm">Respond</button>
+                <div *ngIf="!game.handPlayed">
+                    <button  (click)="onRespondClick(game)" class="btn btn-sm">Respond</button>                
+                </div>
+                <div *ngIf="game.winner != null">
+                    <span [ngSwitch]="game.winningHand">
+                        <span *ngSwitchCase="handsType.rock" class="fa fa-hand-rock-o"></span>
+                        <span *ngSwitchCase="handsType.paper" class="fa fa-hand-paper-o"></span>
+                        <span *ngSwitchCase="handsType.scissors" class="fa fa-hand-scissors-o"></span>
+                        <span *ngSwitchCase="handsType.lizard" class="fa fa-hand-lizard-o"></span>
+                        <span *ngSwitchCase="handsType.spock" class="fa fa-hand-spock-o"></span>
+                    </span>
+                    <span> won against </span>
+                    <span [ngSwitch]="game.losingHand">
+                        <span *ngSwitchCase="handsType.rock" class="fa fa-hand-rock-o"></span>
+                        <span *ngSwitchCase="handsType.paper" class="fa fa-hand-paper-o"></span>
+                        <span *ngSwitchCase="handsType.scissors" class="fa fa-hand-scissors-o"></span>
+                        <span *ngSwitchCase="handsType.lizard" class="fa fa-hand-lizard-o"></span>
+                        <span *ngSwitchCase="handsType.spock" class="fa fa-hand-spock-o"></span>
+                    </span>
+                </div>
             </td>
         </tr>
     </tbody>
