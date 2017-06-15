@@ -41,8 +41,7 @@ namespace api.Controllers
             var web3 = new Nethereum.Web3.Web3(_account.Value.Address);
 
             var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(_account.Value.MasterAccountAddress);
-            var encoded = web3.OfflineTransactionSigner.SignTransaction(_account.Value.MasterAccountPrivateKey, initRequest.Address, new BigInteger(10000000000000000000) , txCount.Value);
-
+            var encoded = web3.OfflineTransactionSigner.SignTransaction(_account.Value.MasterAccountPrivateKey, initRequest.Address, BigInteger.Parse("50000000000000000000") , txCount.Value);
             return Ok(await web3.Eth.Transactions.SendRawTransaction.SendRequestAsync("0x" + encoded));
         }
     }
