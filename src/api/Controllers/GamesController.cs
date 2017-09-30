@@ -121,39 +121,25 @@ namespace api.Data
                 currentRound.HashedHandOpponent = model.HashedHand;
             }
 
-            await _context.SaveChangesAsync();
-
-            var assembly = typeof(GamesController).GetTypeInfo().Assembly;
-            string abi = null;
-            string binary = null;
-            using (Stream resource = assembly.GetManifestResourceStream("api.BlindGame.json"))
-            {
-                using (var streamReader = new StreamReader(resource))
-                {
-                    var contract = streamReader.ReadToEnd();
-                    JObject obj = JObject.Parse(contract);
-                    abi = obj.Property("abi").Value.ToString();
-                    binary = obj.Property("unlinked_binary").Value.ToString();
-                }
-            }
 
             if (game.Address == null)
             {
-                CreateGameAddressJob job = new CreateGameAddressJob(_context, _account);
-                long gameId = game.Id;
-                BackgroundJob.Schedule(() => job.PollForAddress(gameId), TimeSpan.FromSeconds(5));
+               QueuedAction action = new QueuedAction();
+               action.QueuedOn = DateTime.UtcNow;
+               action.QueueType = QueueTypes.CreateGame;
+               action.Round = currentRound;
+               _context.QueuedActions.Add(action);
              
             }
             else if (currentRound.HashedHandChallenger != null && currentRound.HashedHandOpponent != null)
             {
-                     var web3 = new Web3(new Account(_account.Value.MasterAccountPrivateKey), _account.Value.Address);
-       
-                var contract = web3.Eth.GetContract(abi, game.Address);
-                var playHandsFunction = contract.GetFunction("playHands");
-                var trx = await playHandsFunction.SendTransactionAsync(_account.Value.MasterAccountAddress, new HexBigInteger(2000000), new HexBigInteger(0), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger), HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent));
-
+               QueuedAction action = new QueuedAction();
+               action.QueuedOn = DateTime.UtcNow;
+               action.QueueType = QueueTypes.PlayHand;
+               action.Round = currentRound;
+               _context.QueuedActions.Add(action);
             }
-
+            await _context.SaveChangesAsync();
 
 
         }
