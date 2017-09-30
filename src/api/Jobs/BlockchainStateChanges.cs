@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using api.Data;
 using api.Services;
 using api.Util;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Nethereum.Web3;
@@ -23,6 +24,8 @@ public class BlockchainChangeProcessor
         _context = dbContext;
 
     }
+    [DisableConcurrentExecution(60)]
+    [AutomaticRetry(Attempts = 0, LogEvents = false, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
     public async Task Process()
     {
         var web3 = new Web3(new Account(_account.Value.MasterAccountPrivateKey), _account.Value.Address);

@@ -67,6 +67,9 @@ namespace api
                 Authorization = new [] { new CustomDashboardAuthorizationFilter() }
             });
             app.UseHangfireServer();
+            var processor = new BlockchainChangeProcessor(null,null);
+            RecurringJob.AddOrUpdate("process-queue", () => processor.Process(), Cron.Minutely, TimeZoneInfo.Utc);
+
 
             app.ApplicationServices.GetService<BbbgContext>().Database.Migrate();
             
