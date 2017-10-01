@@ -32,15 +32,22 @@ export class HandConfirmationService {
 
                 if(lastLocalRound && 
                     gameInfo.currentRound == lastLocalRound.round && 
-                    gameInfo.canBeConfirmed &&
+                    gameInfo.canBeConfirmed && gameInfo.address &&
                     (!lastLocalRound.revealed && (!lastLocalRound.startedReveal || new Date().getTime() - lastLocalRound.startedReveal.getTime() > 5 * 60 * 1000) )){
                         let contract = this.BlindGame.at(gameInfo.address);
                         lastLocalRound.startedReveal = new Date();
                         this.database.storeGame(gameData)
                             .then(() => contract.revealHand(lastLocalRound.hand, lastLocalRound.salt, {from: this.walletService.getWallet().getAddresses()[0]}))
-                            .then( () => {
-                                lastLocalRound.revealed = true;
-                                return this.database.storeGame(gameData);
+                            .then( () => 
+                                contract.getHandFrom.call(lastLocalRound.round, {from:this.walletService.getWallet().getAddresses()[0] }) )
+                            .then( handInfo=>{
+                                if((gameInfo.gameInitiated && handInfo[1].toNumber() > 0) || (!gameInfo.gameInitiated && handInfo[3].toNumber() > 0) ){
+                                    lastLocalRound.revealed = true;
+                                    console.log('state is ok');
+                                    return this.database.storeGame(gameData);
+                                } else{
+                                    console.log('oops try again later');
+                                }
                             })
                             .catch(ex => console.log(ex));
                 }

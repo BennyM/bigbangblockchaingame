@@ -6,7 +6,8 @@ import * as Web3ProviderEngine from 'web3-provider-engine';
 import * as Web3 from 'web3';
 import * as FilterSubprovider from 'web3-provider-engine/subproviders/filters';
 import * as Web3Subprovider from 'web3-provider-engine/subproviders/web3';
-
+import * as contract from 'truffle-contract';
+import * as blindgame_artifacts from '../contracts-abi/BlindGame.json';
 @Injectable()
 export class Web3ProviderService {
 
@@ -36,12 +37,11 @@ export class Web3ProviderService {
             };
             var hookedWalletProvider = new HookedWalletSubprovider(opts);
             this.engine.addProvider(hookedWalletProvider);
-           this.engine.addProvider(new Web3Subprovider(new Web3.providers.HttpProvider('http://bbbgbcbuj.westeurope.cloudapp.azure.com:8545')));
+           this.engine.addProvider(new Web3Subprovider(new Web3.providers.HttpProvider('http://bbbgwbslq.westeurope.cloudapp.azure.com:8545')));
            
             this.engine.start();
             var web3 = new Web3(this.engine);
            web3.eth.getBalance('0x' + this.wallet.getWallet().getAddresses()[0], (error, result) => console.log("balance: " + result));
-            
         }
         return this.engine;
     }

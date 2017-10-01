@@ -45,7 +45,6 @@ namespace api.Jobs
             }
 
             var web3 = new Web3(_account.Value.Address);
-            var code = await web3.Eth.GetCode.SendRequestAsync(contractAddress);
             var contract = web3.Eth.GetContract(abi, contractAddress);
 
             var winnerEvent = contract.GetEvent("GameEnd");

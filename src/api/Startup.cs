@@ -41,7 +41,7 @@ namespace api
 
              services.AddHangfire(config => config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
     
-            services.AddTransient<CreateGameAddressJob>();
+            services.AddTransient<BlockchainChangeProcessor>();
             services.AddTransient<PollForDrawJob>();
             services.AddTransient<WinnerPollJob>();
              services.AddTransient<PollForRevealHandJob>();
@@ -54,7 +54,7 @@ namespace api
             loggerFactory.AddDebug();
 
             app.UseCors(builder => 
-                builder.WithOrigins(Configuration["Deployment:ui-origin"])
+                builder.AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials());
