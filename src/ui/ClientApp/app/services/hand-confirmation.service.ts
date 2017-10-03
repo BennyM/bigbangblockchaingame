@@ -38,15 +38,17 @@ export class HandConfirmationService {
                         lastLocalRound.startedReveal = new Date();
                         this.database.storeGame(gameData)
                             .then(() => contract.revealHand(lastLocalRound.hand, lastLocalRound.salt, {from: this.walletService.getWallet().getAddresses()[0]}))
-                            .then( () => 
-                                contract.getHandFrom.call(lastLocalRound.round, {from:this.walletService.getWallet().getAddresses()[0] }) )
+                            .then( (tx) => {
+                                 return contract.getHandFrom.call(lastLocalRound.round, {from:this.walletService.getWallet().getAddresses()[0] });
+                             })
                             .then( handInfo=>{
+                                
                                 if((gameInfo.gameInitiated && handInfo[1].toNumber() > 0) || (!gameInfo.gameInitiated && handInfo[3].toNumber() > 0) ){
                                     lastLocalRound.revealed = true;
-                                    console.log('state is ok');
                                     return this.database.storeGame(gameData);
                                 } else{
-                                    console.log('oops try again later');
+                                    lastLocalRound.startedReveal = null;
+                                    return this.database.storeGame(gameData);
                                 }
                             })
                             .catch(ex => console.log(ex));
