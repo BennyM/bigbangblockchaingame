@@ -54,7 +54,7 @@ namespace api
             loggerFactory.AddDebug();
 
             app.UseCors(builder => 
-                builder.AllowAnyOrigin()
+                 builder.WithOrigins(Configuration["Deployment:ui-origin"])
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials());

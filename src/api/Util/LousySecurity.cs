@@ -27,10 +27,11 @@ namespace api.Util
 
     public class LousySecurityMiddleware : AuthenticationMiddleware<LousySecurityOptions>
     {
-        public LousySecurityMiddleware(RequestDelegate next, IOptions<LousySecurityOptions> options, ILoggerFactory loggerFactory, UrlEncoder encoder, BbbgContext dbContext)
+       
+        public LousySecurityMiddleware(RequestDelegate next, IOptions<LousySecurityOptions> options, ILoggerFactory loggerFactory, UrlEncoder encoder)
             : base(next, options, loggerFactory, encoder)
         {            
-            options.Value.DbContext = dbContext;
+            
         }
 
         protected override AuthenticationHandler<LousySecurityOptions> CreateHandler()
@@ -41,8 +42,16 @@ namespace api.Util
 
     public class LousySecurityHandler : AuthenticationHandler<LousySecurityOptions>
     {
+
+       
+
+        public LousySecurityHandler()
+        {
+           
+        }
+
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
-        {            
+        {           
             string authorization = Request.Headers["Authorization"];
             if(string.IsNullOrEmpty(authorization))
             {
@@ -62,7 +71,8 @@ namespace api.Util
             try 
             {
                 var keyGuid = new Guid(key);
-                var player = await Options.DbContext.Players.SingleOrDefaultAsync(x => x.LousySecurityKey == keyGuid);
+                var dbContext = (BbbgContext)Context.RequestServices.GetService(typeof(BbbgContext));
+                var player = await dbContext.Players.SingleOrDefaultAsync(x => x.LousySecurityKey == keyGuid);
 
                 if(player != null) 
                 {
@@ -96,6 +106,5 @@ namespace api.Util
             AutomaticChallenge = true;
         }
 
-        public BbbgContext DbContext { get; set; }
     }
 }
