@@ -2,7 +2,7 @@ import { Game } from './games.service';
 import { Injectable } from '@angular/core';
 import { HandConfirmationService } from './hand-confirmation.service';
 import { AngularIndexedDB } from 'angular2-indexeddb';
-import { Hands } from "../Hands";
+import { Hands } from "../hands";
 
 @Injectable()
 export class GameDatabaseService{

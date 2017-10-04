@@ -6,7 +6,7 @@ import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
 import { Observable } from 'rxjs/Observable';
 import { AuthenticatedHttp } from './authenticated-http';
 import { Injectable } from '@angular/core';
-import { Hands } from "../Hands";
+import { Hands } from "../hands";
 import * as randomstring from 'randomstring';
 import * as abi from 'ethereumjs-abi';
 import { AngularIndexedDB } from 'angular2-indexeddb';
