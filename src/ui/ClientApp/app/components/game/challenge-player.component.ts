@@ -1,7 +1,7 @@
 import { GamesService } from './../../services/games.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
-import { Hands } from "../../Hands";
+import { Hands } from "../../hands";
 
 @Component({
     selector: 'challenge-player',

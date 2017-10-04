@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { Hands } from "../../Hands";
+import { Hands } from "../../hands";
 
 @Component({
     selector: 'choose-hand',

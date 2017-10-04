@@ -3,7 +3,7 @@ import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
 import { Router } from '@angular/router';
 import { GamesService, Game } from './../../services/games.service';
 import { Component, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
-import { Hands } from "../../Hands";
+import { Hands } from "../../hands";
 import { Subscription } from "rxjs/Subscription";
 
 @Component({
