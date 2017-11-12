@@ -13,7 +13,7 @@ export class Web3ProviderService {
 
     private engine: Web3ProviderEngine;
 
-    constructor(private wallet: WalletService){
+    constructor(private wallet: WalletService) {
 
     }
 
@@ -23,13 +23,13 @@ export class Web3ProviderService {
             var opts = {
                 getAccounts: (cb) => {
                     let addresses = this.wallet.getWallet().getAddresses();
-                    let prefixedAddresses =addresses.map(add => {
+                    let prefixedAddresses = addresses.map(add => {
                         return '0x' + add;
                     });
                     cb(null, prefixedAddresses);
                 },
                 signTransaction: (tx, cb) => {
-                    let signedTransactionCallback = (error, result) =>{
+                    let signedTransactionCallback = (error, result) => {
                         cb(null, result);
                     };
                     this.wallet.getWallet().signTransaction(tx, signedTransactionCallback);
@@ -37,11 +37,11 @@ export class Web3ProviderService {
             };
             var hookedWalletProvider = new HookedWalletSubprovider(opts);
             this.engine.addProvider(hookedWalletProvider);
-           this.engine.addProvider(new Web3Subprovider(new Web3.providers.HttpProvider('http://bbbgwbslq.westeurope.cloudapp.azure.com:8545')));
-           
+            this.engine.addProvider(new Web3Subprovider(new Web3.providers.HttpProvider('http://bbbgwbslqc4b.westeurope.cloudapp.azure.com:8545')));
+
             this.engine.start();
             var web3 = new Web3(this.engine);
-           web3.eth.getBalance('0x' + this.wallet.getWallet().getAddresses()[0], (error, result) => console.log("balance: " + result));
+            web3.eth.getBalance('0x' + this.wallet.getWallet().getAddresses()[0], (error, result) => console.log("balance: " + result));
         }
         return this.engine;
     }
