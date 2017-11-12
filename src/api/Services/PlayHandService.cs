@@ -11,7 +11,6 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using Nethereum.Web3.Accounts;
 using Microsoft.EntityFrameworkCore;
-using Nethereum.Web3.TransactionReceipts;
 using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.Hex.HexTypes;
 using Nethereum.RPC.Eth;
@@ -33,7 +32,7 @@ namespace api.Services
             _dbContext = dbContext;
             _account = account;
             var assembly = typeof(GamesController).GetTypeInfo().Assembly;
-           
+
             string binary = null;
             using (Stream resource = assembly.GetManifestResourceStream("api.BlindGame.json"))
             {
@@ -46,19 +45,19 @@ namespace api.Services
                 }
             }
         }
-        public  Func<Task<string>> CreateTransaction(QueuedAction action, Web3 web3)
+        public Func<Task<string>> CreateTransaction(QueuedAction action, Web3 web3)
         {
             var contract = web3.Eth.GetContract(_abi, action.Round.Game.Address);
             var playHandsFunction = contract.GetFunction("playHands");
             return () => playHandsFunction.SendTransactionAsync(
-                _account.Value.MasterAccountAddress, 
-                new HexBigInteger(2000000), 
-                new HexBigInteger(0), 
-                HexByteConvertorExtensions.HexToByteArray(action.Round.HashedHandChallenger), 
+                _account.Value.MasterAccountAddress,
+                new HexBigInteger(2000000),
+                new HexBigInteger(0),
+                HexByteConvertorExtensions.HexToByteArray(action.Round.HashedHandChallenger),
                 HexByteConvertorExtensions.HexToByteArray(action.Round.HashedHandOpponent));
 
 
-           
+
         }
 
         public Task ProcessReceipt(TransactionReceipt receipt, Web3 web3, QueuedAction action)

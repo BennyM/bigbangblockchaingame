@@ -11,13 +11,13 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using Nethereum.Web3.Accounts;
 using Microsoft.EntityFrameworkCore;
-using Nethereum.Web3.TransactionReceipts;
 using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.Hex.HexTypes;
 using Nethereum.RPC.Eth;
 using Nethereum.Contracts;
 using Nethereum.RPC.Eth.DTOs;
 using api.Jobs;
+using Nethereum.RPC.Eth.Exceptions;
 
 namespace api.Services
 {
@@ -33,8 +33,8 @@ namespace api.Services
             _dbContext = dbContext;
             _account = account;
             var assembly = typeof(GamesController).GetTypeInfo().Assembly;
-           
-            string binary = null;
+
+
             using (Stream resource = assembly.GetManifestResourceStream("api.BlindGame.json"))
             {
                 using (var streamReader = new StreamReader(resource))
@@ -46,21 +46,21 @@ namespace api.Services
                 }
             }
         }
-        public  Func<Task<string>> CreateTransaction(QueuedAction action, Web3 web3)
+        public Func<Task<string>> CreateTransaction(QueuedAction action, Web3 web3)
         {
             var currentRound = action.Round;
-                return
-                    () =>
-                        web3.Eth.DeployContract.SendRequestAsync(_abi, _binary, 
-                        _account.Value.MasterAccountAddress, 
-                        new HexBigInteger(2000000),
-                        currentRound.Game.Challenger.Address, 
-                        currentRound.Game.Opponent.Address, 
-                        HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger), 
-                        HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent));
+            return
+                () =>
+                    web3.Eth.DeployContract.SendRequestAsync(_abi, _binary,
+                    _account.Value.MasterAccountAddress,
+                    new HexBigInteger(3000000),
+                    currentRound.Game.Challenger.Address,
+                    currentRound.Game.Opponent.Address,
+                    HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandChallenger),
+                    HexByteConvertorExtensions.HexToByteArray(currentRound.HashedHandOpponent));
 
 
-           
+
         }
 
         public async Task ProcessReceipt(TransactionReceipt receipt, Web3 web3, QueuedAction action)
@@ -70,7 +70,7 @@ namespace api.Services
             var code = await ethGetCode.SendRequestAsync(contractAddress);
             if (code == "0x") throw new ContractDeploymentException("Code not deployed succesfully", receipt);
 
-             action.Round.Game.Address = contractAddress;
+            action.Round.Game.Address = contractAddress;
             action.Round.Mined = true;
 
             var contract = web3.Eth.GetContract(_abi, contractAddress);
